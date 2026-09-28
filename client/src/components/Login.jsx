@@ -8,6 +8,15 @@ function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Debug: check if localStorage has data
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token || user) {
+      console.warn('Found data in localStorage:', { token, user });
+    }
+  }, []);
+
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError('');
@@ -123,6 +132,28 @@ function Login({ onLogin }) {
             </p>
           </form>
         )}
+
+        <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #333', textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.reload();
+            }}
+            style={{
+              padding: '8px 16px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid #555',
+              color: '#aaa',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            🔄 Reset App
+          </button>
+        </div>
       </div>
     </div>
   );
