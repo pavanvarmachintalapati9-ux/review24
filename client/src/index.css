@@ -1037,6 +1037,7 @@ html, body, #root {
   align-items: center;
   flex-wrap: wrap;
   position: relative;
+  order: -1;
 }
 
 .genre-select {
@@ -1121,7 +1122,7 @@ html, body, #root {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   background: rgba(20, 20, 20, 0.95);
   border: 1px solid var(--border-color);
   border-radius: 8px;
