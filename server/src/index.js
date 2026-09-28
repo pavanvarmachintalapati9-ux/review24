@@ -106,13 +106,14 @@ app.post('/api/auth/send-otp', (req, res) => {
     return res.status(400).json({ error: 'Invalid phone number. Please enter a valid 10-digit phone number.' });
   }
 
-  const otp = generateOTP();
+  // For testing: use 1234, for production use generateOTP()
+  const otp = process.env.NODE_ENV === 'production' ? generateOTP() : '1234';
   db.otps[phone] = otp;
 
   // In production, send OTP via SMS. For now, log it
   console.log(`OTP for ${phone}: ${otp}`);
 
-  res.json({ message: 'OTP sent successfully', phone });
+  res.json({ message: 'OTP sent successfully', phone, testOTP: otp });
 });
 
 // Verify OTP and login
