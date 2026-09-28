@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Initialize Anthropic client
 const client = new Anthropic({
@@ -235,33 +235,38 @@ app.get('/api/movies/:id', (req, res) => {
 
 // POST new movie (Admin only)
 app.post('/api/movies', authenticateUser, (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.status(403).json({ error: 'Only admins can upload movies' });
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ error: 'Only admins can upload movies' });
+    }
+
+    const { title, description, genre, releaseDate, posterUrl, posterImage } = req.body;
+
+    if (!title || !description || !genre || !releaseDate) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (!posterImage && !posterUrl) {
+      return res.status(400).json({ error: 'Poster image or URL is required' });
+    }
+
+    const movie = {
+      id: uuidv4(),
+      title,
+      description,
+      genre,
+      releaseDate,
+      posterUrl: posterImage || posterUrl,
+      uploadedBy: req.user.id,
+      createdAt: new Date().toISOString()
+    };
+
+    db.movies.push(movie);
+    res.status(201).json(movie);
+  } catch (error) {
+    console.error('Error uploading movie:', error);
+    res.status(500).json({ error: 'Failed to upload movie' });
   }
-
-  const { title, description, genre, releaseDate, posterUrl, posterImage } = req.body;
-
-  if (!title || !description || !genre || !releaseDate) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  if (!posterImage && !posterUrl) {
-    return res.status(400).json({ error: 'Poster image or URL is required' });
-  }
-
-  const movie = {
-    id: uuidv4(),
-    title,
-    description,
-    genre,
-    releaseDate,
-    posterUrl: posterImage || posterUrl,
-    uploadedBy: req.user.id,
-    createdAt: new Date().toISOString()
-  };
-
-  db.movies.push(movie);
-  res.status(201).json(movie);
 });
 
 
