@@ -165,107 +165,108 @@ function MovieDetailsNew({ movie, onClose, user, token }) {
         </div>
       </div>
 
-      {/* Only show tabs and content for non-admin users */}
-      {!user?.isAdmin ? (
-        <>
-          {/* Tabs */}
-          <div className="tabs-section">
-            <button
-              className={`tab ${activeTab === 'comments' ? 'active' : ''}`}
-              onClick={() => setActiveTab('comments')}
-            >
-              💬 Comments ({comments.length})
+      {/* Tabs - Show reviews for everyone, comments only for non-admin */}
+      <div className="tabs-section">
+        {!user?.isAdmin && (
+          <button
+            className={`tab ${activeTab === 'comments' ? 'active' : ''}`}
+            onClick={() => setActiveTab('comments')}
+          >
+            💬 Comments ({comments.length})
+          </button>
+        )}
+        <button
+          className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
+          onClick={() => setActiveTab('reviews')}
+        >
+          📝 Reviews ({reviews.length})
+        </button>
+      </div>
+
+      {/* Comments Section - Only for non-admin users */}
+      {!user?.isAdmin && activeTab === 'comments' && (
+        <div className="section-box">
+          <h3>Comments</h3>
+
+          {/* Comment Form */}
+          <form onSubmit={handleCommentSubmit} className="input-section">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Share your thoughts about this movie..."
+              rows="3"
+            />
+            <button type="submit" className="btn-submit">
+              Post Comment
             </button>
-            <button
-              className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
-              onClick={() => setActiveTab('reviews')}
-            >
-              📝 Reviews ({reviews.length})
-            </button>
+          </form>
+
+          {/* Comments List */}
+          <div className="comments-list">
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <div key={comment.id} className="comment-box">
+                  <div className="comment-header">
+                    <span className="user-info">👤 {comment.phone}</span>
+                    <span className="timestamp">
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="comment-text">{comment.text}</p>
+                </div>
+              ))
+            ) : (
+              <p className="no-content">No comments yet. Be the first!</p>
+            )}
           </div>
+        </div>
+      )}
 
-          {/* Comments Section */}
-          {activeTab === 'comments' && (
-            <div className="section-box">
-              <h3>Comments</h3>
+      {/* Reviews Section - For everyone */}
+      {activeTab === 'reviews' && (
+        <div className="section-box">
+          <h3>Reviews</h3>
 
-              {/* Comment Form */}
-              <form onSubmit={handleCommentSubmit} className="input-section">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Share your thoughts about this movie..."
-                  rows="3"
-                />
-                <button type="submit" className="btn-submit">
-                  Post Comment
-                </button>
-              </form>
+          {/* Review Form - Only for non-admin */}
+          {!user?.isAdmin && (
+            <form onSubmit={handleReviewSubmit} className="input-section">
+              <textarea
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+                placeholder="Write a detailed review about this movie..."
+                rows="4"
+              />
+              <button type="submit" className="btn-submit">
+                Post Review
+              </button>
+            </form>
+          )}
 
-              {/* Comments List */}
-              <div className="comments-list">
-                {comments.length > 0 ? (
-                  comments.map((comment) => (
-                    <div key={comment.id} className="comment-box">
-                      <div className="comment-header">
-                        <span className="user-info">👤 {comment.phone}</span>
-                        <span className="timestamp">
-                          {new Date(comment.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <p className="comment-text">{comment.text}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-content">No comments yet. Be the first!</p>
-                )}
-              </div>
+          {/* Admin Notice */}
+          {user?.isAdmin && (
+            <div className="admin-notice-inline">
+              <p>👤 Admin Account - View user reviews below</p>
             </div>
           )}
 
-          {/* Reviews Section */}
-          {activeTab === 'reviews' && (
-            <div className="section-box">
-              <h3>Reviews</h3>
-
-              {/* Review Form */}
-              <form onSubmit={handleReviewSubmit} className="input-section">
-                <textarea
-                  value={newReview}
-                  onChange={(e) => setNewReview(e.target.value)}
-                  placeholder="Write a detailed review about this movie..."
-                  rows="4"
-                />
-                <button type="submit" className="btn-submit">
-                  Post Review
-                </button>
-              </form>
-
-              {/* Reviews List */}
-              <div className="reviews-list">
-                {reviews.length > 0 ? (
-                  reviews.map((review) => (
-                    <div key={review.id} className="review-box">
-                      <div className="review-header">
-                        <span className="user-info">👤 {review.phone}</span>
-                        <span className="timestamp">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <p className="review-text">{review.text}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="no-content">No reviews yet. Share your thoughts!</p>
-                )}
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="section-box admin-notice">
-          <p>✅ As an admin, you can upload movies using the "+ Upload Movie" button.</p>
-          <p>Regular users can comment and review movies.</p>
+          {/* Reviews List - For everyone */}
+          <div className="reviews-list">
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review.id} className="review-box">
+                  <div className="review-header">
+                    <span className="user-info">👤 {review.phone}</span>
+                    <span className="timestamp">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="review-text">{review.text}</p>
+                </div>
+              ))
+            ) : (
+              <p className="no-content">No reviews yet. Share your thoughts!</p>
+            )}
+          </div>
         </div>
       )}
     </div>

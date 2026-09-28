@@ -1286,6 +1286,22 @@ html, body, #root {
   font-weight: bold;
 }
 
+.admin-notice-inline {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.admin-notice-inline p {
+  color: var(--success-color);
+  font-size: 13px;
+  margin: 0;
+  font-weight: 500;
+}
+
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
