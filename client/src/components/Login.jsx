@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Login({ onLogin }) {
@@ -9,7 +9,7 @@ function Login({ onLogin }) {
   const [error, setError] = useState('');
 
   // Debug: check if localStorage has data
-  React.useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token || user) {
