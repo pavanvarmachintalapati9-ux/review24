@@ -239,10 +239,14 @@ app.post('/api/movies', authenticateUser, (req, res) => {
     return res.status(403).json({ error: 'Only admins can upload movies' });
   }
 
-  const { title, description, genre, releaseDate, posterUrl } = req.body;
+  const { title, description, genre, releaseDate, posterUrl, posterImage } = req.body;
 
-  if (!title || !description || !genre) {
+  if (!title || !description || !genre || !releaseDate) {
     return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  if (!posterImage && !posterUrl) {
+    return res.status(400).json({ error: 'Poster image or URL is required' });
   }
 
   const movie = {
@@ -251,7 +255,7 @@ app.post('/api/movies', authenticateUser, (req, res) => {
     description,
     genre,
     releaseDate,
-    posterUrl,
+    posterUrl: posterImage || posterUrl,
     uploadedBy: req.user.id,
     createdAt: new Date().toISOString()
   };

@@ -7,8 +7,10 @@ function UploadMovie({ token, onMovieAdded }) {
     description: '',
     genre: 'Drama',
     releaseDate: '',
-    posterUrl: ''
+    posterUrl: '',
+    posterImage: null
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,12 +27,37 @@ function UploadMovie({ token, onMovieAdded }) {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview(event.target.result);
+        setFormData(prev => ({
+          ...prev,
+          posterImage: event.target.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!formData.title || !formData.description || !formData.releaseDate) {
       setError('Please fill in all required fields');
+      return;
+    }
+
+    if (!formData.posterImage) {
+      setError('Please upload a poster image');
       return;
     }
 
@@ -44,8 +71,10 @@ function UploadMovie({ token, onMovieAdded }) {
         description: '',
         genre: 'Drama',
         releaseDate: '',
-        posterUrl: ''
+        posterUrl: '',
+        posterImage: null
       });
+      setImagePreview(null);
       onMovieAdded();
     } catch (error) {
       console.error('Error uploading movie:', error);
@@ -112,7 +141,40 @@ function UploadMovie({ token, onMovieAdded }) {
         </div>
 
         <div className="form-group">
-          <label>Poster URL</label>
+          <label>Poster Image * (Max 5MB)</label>
+          <div className="image-upload-section">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={loading}
+              id="poster-upload"
+              className="file-input"
+            />
+            <label htmlFor="poster-upload" className="file-label">
+              📸 Click to upload or drag image
+            </label>
+            {imagePreview && (
+              <div className="image-preview">
+                <img src={imagePreview} alt="Preview" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview(null);
+                    setFormData(prev => ({ ...prev, posterImage: null }));
+                  }}
+                  className="btn-remove-image"
+                  disabled={loading}
+                >
+                  ✕ Remove
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Poster URL (Optional - if no image uploaded)</label>
           <input
             type="url"
             name="posterUrl"
