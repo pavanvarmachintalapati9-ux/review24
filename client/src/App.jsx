@@ -25,6 +25,8 @@ function App() {
 
   useEffect(() => {
     if (token) {
+      // Verify token is still valid
+      verifyToken();
       fetchGenres();
       fetchLanguages();
       fetchMovies();
@@ -32,6 +34,21 @@ function App() {
       setLoading(false);
     }
   }, [token]);
+
+  const verifyToken = async () => {
+    try {
+      await axios.get('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      // Token is invalid, clear it
+      console.log('Token invalid, clearing session');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setToken(null);
+      setUser(null);
+    }
+  };
 
   useEffect(() => {
     if (token) {
@@ -76,6 +93,9 @@ function App() {
   };
 
   const handleLogin = (newToken, newUser) => {
+    console.log('handleLogin called with token:', newToken);
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
   };

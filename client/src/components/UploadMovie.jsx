@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function UploadMovie({ token, onMovieAdded }) {
+  console.log('UploadMovie component mounted with token:', token);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -85,9 +87,12 @@ function UploadMovie({ token, onMovieAdded }) {
 
     setLoading(true);
     try {
-      await axios.post('/api/movies', formData, {
+      console.log('Uploading movie with token:', token);
+      console.log('Authorization header:', `Bearer ${token}`);
+      const response = await axios.post('/api/movies', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Movie uploaded successfully:', response.data);
       setFormData({
         title: '',
         description: '',
@@ -102,7 +107,18 @@ function UploadMovie({ token, onMovieAdded }) {
       onMovieAdded();
     } catch (error) {
       console.error('Error uploading movie:', error);
-      setError(error.response?.data?.error || 'Failed to upload movie');
+      const errorMsg = error.response?.data?.error || 'Failed to upload movie';
+
+      // If token is invalid, clear it and prompt user to login again
+      if (errorMsg === 'Invalid token' || error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setError('Your session has expired. Please login again.');
+        // Optionally reload the page to show login screen
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
