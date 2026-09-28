@@ -168,11 +168,21 @@ app.get('/api/auth/me', authenticateUser, (req, res) => {
 
 // GET all movies with filters
 app.get('/api/movies', (req, res) => {
-  const { genre, search } = req.query;
+  const { genre, language, movieType, search } = req.query;
   let filtered = [...db.movies];
 
-  if (genre && genre !== 'All') {
+  if (genre) {
     filtered = filtered.filter(m => m.genre === genre);
+  }
+
+  if (language) {
+    filtered = filtered.filter(m => m.language === language);
+  }
+
+  if (movieType) {
+    filtered = filtered.filter(m => m.movieType === movieType);
+  } else {
+    filtered = filtered.filter(m => m.movieType === 'movie');
   }
 
   if (search) {
@@ -240,9 +250,9 @@ app.post('/api/movies', authenticateUser, (req, res) => {
       return res.status(403).json({ error: 'Only admins can upload movies' });
     }
 
-    const { title, description, genre, releaseDate, posterUrl, posterImage } = req.body;
+    const { title, description, genre, language, releaseDate, posterUrl, posterImage, movieType } = req.body;
 
-    if (!title || !description || !genre || !releaseDate) {
+    if (!title || !description || !genre || !language || !releaseDate) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -255,7 +265,9 @@ app.post('/api/movies', authenticateUser, (req, res) => {
       title,
       description,
       genre,
+      language,
       releaseDate,
+      movieType: movieType || 'movie',
       posterUrl: posterImage || posterUrl,
       uploadedBy: req.user.id,
       createdAt: new Date().toISOString()
@@ -446,8 +458,20 @@ app.get('/api/movies/:movieId/reviews', (req, res) => {
 
 // GET genres
 app.get('/api/genres', (req, res) => {
-  const genres = [...new Set(db.movies.map(m => m.genre))].sort();
-  res.json(['All', ...genres]);
+  const allGenres = [
+    'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Documentary',
+    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Musical',
+    'Romance', 'Sci-Fi', 'Mystery', 'Short', 'Sport', 'Thriller', 'War',
+    'Western', 'Commercial', 'Mass', 'Anime', 'Crime', 'K-Drama', 'C-Drama',
+    'J-Drama'
+  ];
+  res.json(allGenres);
+});
+
+// GET languages
+app.get('/api/languages', (req, res) => {
+  const languages = [...new Set(db.movies.map(m => m.language))].filter(Boolean).sort();
+  res.json(languages);
 });
 
 // Health check

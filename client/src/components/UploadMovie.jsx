@@ -6,6 +6,8 @@ function UploadMovie({ token, onMovieAdded }) {
     title: '',
     description: '',
     genre: 'Drama',
+    language: 'English',
+    movieType: 'movie',
     releaseDate: '',
     posterUrl: '',
     posterImage: null
@@ -15,9 +17,14 @@ function UploadMovie({ token, onMovieAdded }) {
   const [error, setError] = useState('');
 
   const genres = [
-    'Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Romance',
-    'Sci-Fi', 'Thriller', 'Animation', 'Documentary', 'Adventure'
+    'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Documentary',
+    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Musical',
+    'Romance', 'Sci-Fi', 'Mystery', 'Short', 'Sport', 'Thriller', 'War',
+    'Western', 'Commercial', 'Mass', 'Anime', 'Crime', 'K-Drama', 'C-Drama',
+    'J-Drama'
   ];
+
+  const languages = ['English', 'Spanish', 'French', 'German', 'Italian', 'Japanese', 'Korean', 'Chinese', 'Hindi', 'Portuguese', 'Russian', 'Arabic', 'Turkish', 'Dutch', 'Swedish', 'Polish', 'Greek', 'Thai', 'Vietnamese'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +58,7 @@ function UploadMovie({ token, onMovieAdded }) {
     e.preventDefault();
     setError('');
 
-    if (!formData.title || !formData.description || !formData.releaseDate) {
+    if (!formData.title || !formData.description || !formData.language || !formData.releaseDate) {
       setError('Please fill in all required fields');
       return;
     }
@@ -70,6 +77,8 @@ function UploadMovie({ token, onMovieAdded }) {
         title: '',
         description: '',
         genre: 'Drama',
+        language: 'English',
+        movieType: 'movie',
         releaseDate: '',
         posterUrl: '',
         posterImage: null
@@ -115,16 +124,45 @@ function UploadMovie({ token, onMovieAdded }) {
         </div>
 
         <div className="form-group">
-          <label>Genre</label>
+          <label>Genre *</label>
           <select
             name="genre"
             value={formData.genre}
             onChange={handleChange}
             disabled={loading}
+            required
           >
             {genres.map(genre => (
               <option key={genre} value={genre}>{genre}</option>
             ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Language *</label>
+          <select
+            name="language"
+            value={formData.language}
+            onChange={handleChange}
+            disabled={loading}
+            required
+          >
+            {languages.map(lang => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Type</label>
+          <select
+            name="movieType"
+            value={formData.movieType}
+            onChange={handleChange}
+            disabled={loading}
+          >
+            <option value="movie">Movie</option>
+            <option value="tv-show">TV Show</option>
           </select>
         </div>
 

@@ -12,16 +12,21 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [movies, setMovies] = useState([]);
-  const [genres, setGenres] = useState(['All']);
-  const [selectedGenre, setSelectedGenre] = useState('All');
+  const [genres, setGenres] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [movieType, setMovieType] = useState('movie');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
       fetchGenres();
+      fetchLanguages();
       fetchMovies();
     } else {
       setLoading(false);
@@ -32,7 +37,7 @@ function App() {
     if (token) {
       fetchMovies();
     }
-  }, [selectedGenre, searchQuery, token]);
+  }, [selectedGenre, selectedLanguage, movieType, searchQuery, token]);
 
   const fetchGenres = async () => {
     try {
@@ -43,11 +48,22 @@ function App() {
     }
   };
 
+  const fetchLanguages = async () => {
+    try {
+      const response = await axios.get('/api/languages');
+      setLanguages(response.data);
+    } catch (error) {
+      console.error('Error fetching languages:', error);
+    }
+  };
+
   const fetchMovies = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (selectedGenre !== 'All') params.append('genre', selectedGenre);
+      if (selectedGenre) params.append('genre', selectedGenre);
+      if (selectedLanguage) params.append('language', selectedLanguage);
+      if (movieType) params.append('movieType', movieType);
       if (searchQuery) params.append('search', searchQuery);
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
@@ -77,6 +93,7 @@ function App() {
     setShowUploadForm(false);
     fetchMovies();
     fetchGenres();
+    fetchLanguages();
   };
 
   // Show login if not authenticated
@@ -89,7 +106,7 @@ function App() {
       {/* Header */}
       <header className="header-new">
         <div className="header-content-new">
-          <h1 className="logo">🎬 CinemaReview</h1>
+          <h1 className="logo">📺 Review 24</h1>
 
           <div className="search-section">
             <input
@@ -104,35 +121,110 @@ function App() {
             </button>
           </div>
 
+          {/* Hamburger Menu */}
           <div className="header-right">
-            <select
-              className="genre-select"
-              value={selectedGenre}
-              onChange={(e) => setSelectedGenre(e.target.value)}
+            <button
+              className="btn-menu"
+              onClick={() => setShowMenu(!showMenu)}
+              title="Menu"
             >
-              {genres.map((genre) => (
-                <option key={genre} value={genre}>
-                  {genre}
-                </option>
-              ))}
-            </select>
+              ☰
+            </button>
 
-            {user?.isAdmin && (
-              <button
-                className="btn-upload"
-                onClick={() => setShowUploadForm(true)}
-              >
-                + Upload Movie
-              </button>
+            {showMenu && (
+              <div className="dropdown-menu">
+                <div className="menu-section">
+                  <label>Language</label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => {
+                      setSelectedLanguage(e.target.value);
+                      setShowMenu(false);
+                    }}
+                    className="menu-select"
+                  >
+                    <option value="">All Languages</option>
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="menu-section">
+                  <label>Genre</label>
+                  <select
+                    value={selectedGenre}
+                    onChange={(e) => {
+                      setSelectedGenre(e.target.value);
+                      setShowMenu(false);
+                    }}
+                    className="menu-select"
+                  >
+                    <option value="">All Genres</option>
+                    {genres.map((genre) => (
+                      <option key={genre} value={genre}>
+                        {genre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="menu-section">
+                  <label>Type</label>
+                  <div className="type-options">
+                    <button
+                      className={`type-btn ${movieType === 'movie' ? 'active' : ''}`}
+                      onClick={() => {
+                        setMovieType('movie');
+                        setShowMenu(false);
+                      }}
+                    >
+                      🎬 Movies
+                    </button>
+                    <button
+                      className={`type-btn ${movieType === 'tv-show' ? 'active' : ''}`}
+                      onClick={() => {
+                        setMovieType('tv-show');
+                        setShowMenu(false);
+                      }}
+                    >
+                      📺 TV Shows
+                    </button>
+                  </div>
+                </div>
+
+                {user?.isAdmin && (
+                  <div className="menu-section">
+                    <button
+                      className="btn-upload-menu"
+                      onClick={() => {
+                        setShowUploadForm(true);
+                        setShowMenu(false);
+                      }}
+                    >
+                      + Upload Movie
+                    </button>
+                  </div>
+                )}
+
+                <div className="menu-divider"></div>
+
+                <div className="menu-section user-section">
+                  <div className="user-info-menu">
+                    <span>📱 {user.phone}</span>
+                    {user.isAdmin && <span className="admin-badge-menu">Admin</span>}
+                  </div>
+                  <button className="btn-logout-menu" onClick={() => {
+                    handleLogout();
+                    setShowMenu(false);
+                  }}>
+                    Logout
+                  </button>
+                </div>
+              </div>
             )}
-
-            <div className="user-info">
-              <span className="user-phone">📱 {user.phone}</span>
-              {user.isAdmin && <span className="admin-badge">Admin</span>}
-              <button className="btn-logout" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
           </div>
         </div>
       </header>
@@ -177,13 +269,13 @@ function App() {
         {loading ? (
           <div className="loading-state">
             <div className="spinner"></div>
-            <p>Loading movies...</p>
+            <p>Loading {movieType === 'movie' ? 'movies' : 'TV shows'}...</p>
           </div>
         ) : movies.length > 0 ? (
           <MovieListPopcorn movies={movies} onSelectMovie={setSelectedMovie} />
         ) : (
           <div className="empty-state">
-            <p>No movies found. Try adjusting your filters!</p>
+            <p>No content found. Try adjusting your filters!</p>
           </div>
         )}
       </main>
