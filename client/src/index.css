@@ -1036,6 +1036,7 @@ html, body, #root {
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .genre-select {
@@ -1109,7 +1110,12 @@ html, body, #root {
   font-size: 24px;
   cursor: pointer;
   padding: 8px 12px;
-  display: none;
+  display: block;
+  transition: all 0.3s;
+}
+
+.btn-menu:hover {
+  color: var(--primary-color);
 }
 
 .dropdown-menu {
