@@ -1267,6 +1267,25 @@ html, body, #root {
   font-size: 14px;
 }
 
+.admin-notice {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+}
+
+.admin-notice p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.admin-notice p:first-child {
+  color: var(--success-color);
+  font-weight: bold;
+}
+
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
