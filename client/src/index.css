@@ -1037,7 +1037,6 @@ html, body, #root {
   align-items: center;
   flex-wrap: wrap;
   position: relative;
-  order: -1;
 }
 
 .genre-select {
