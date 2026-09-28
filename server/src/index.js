@@ -456,21 +456,22 @@ app.get('/api/movies/:movieId/reviews', (req, res) => {
   res.json(reviews);
 });
 
-// GET genres
+// GET genres (short names in ascending order)
 app.get('/api/genres', (req, res) => {
   const allGenres = [
-    'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Documentary',
-    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Musical',
-    'Romance', 'Sci-Fi', 'Mystery', 'Short', 'Sport', 'Thriller', 'War',
-    'Western', 'Commercial', 'Mass', 'Anime', 'Crime', 'K-Drama', 'C-Drama',
-    'J-Drama'
+    'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime',
+    'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror',
+    'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'
   ];
   res.json(allGenres);
 });
 
-// GET languages
+// GET languages (Indian + International)
 app.get('/api/languages', (req, res) => {
-  const languages = [...new Set(db.movies.map(m => m.language))].filter(Boolean).sort();
+  const languages = [
+    'Bengali', 'Chinese', 'English', 'Gujarati', 'Hindi', 'Japanese',
+    'Kannada', 'Korean', 'Malayalam', 'Marathi', 'Odia', 'Punjabi', 'Tamil', 'Telugu'
+  ];
   res.json(languages);
 });
 
