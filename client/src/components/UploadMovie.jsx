@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-function UploadMovie({ onMovieAdded }) {
+function UploadMovie({ token, onMovieAdded }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -10,6 +10,7 @@ function UploadMovie({ onMovieAdded }) {
     posterUrl: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const genres = [
     'Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Romance',
@@ -26,15 +27,18 @@ function UploadMovie({ onMovieAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!formData.title || !formData.description || !formData.releaseDate) {
-      alert('Please fill in all required fields');
+      setError('Please fill in all required fields');
       return;
     }
 
     setLoading(true);
     try {
-      await axios.post('/api/movies', formData);
+      await axios.post('/api/movies', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setFormData({
         title: '',
         description: '',
@@ -45,7 +49,7 @@ function UploadMovie({ onMovieAdded }) {
       onMovieAdded();
     } catch (error) {
       console.error('Error uploading movie:', error);
-      alert('Failed to upload movie');
+      setError(error.response?.data?.error || 'Failed to upload movie');
     } finally {
       setLoading(false);
     }
@@ -54,6 +58,8 @@ function UploadMovie({ onMovieAdded }) {
   return (
     <div className="modal-body">
       <form onSubmit={handleSubmit} className="upload-movie-form">
+        {error && <div className="error-message">{error}</div>}
+
         <div className="form-group">
           <label>Movie Title *</label>
           <input
@@ -62,6 +68,7 @@ function UploadMovie({ onMovieAdded }) {
             value={formData.title}
             onChange={handleChange}
             placeholder="Enter movie title"
+            disabled={loading}
             required
           />
         </div>
@@ -73,6 +80,7 @@ function UploadMovie({ onMovieAdded }) {
             value={formData.description}
             onChange={handleChange}
             placeholder="Enter movie description or synopsis"
+            disabled={loading}
             required
           />
         </div>
@@ -83,6 +91,7 @@ function UploadMovie({ onMovieAdded }) {
             name="genre"
             value={formData.genre}
             onChange={handleChange}
+            disabled={loading}
           >
             {genres.map(genre => (
               <option key={genre} value={genre}>{genre}</option>
@@ -97,6 +106,7 @@ function UploadMovie({ onMovieAdded }) {
             name="releaseDate"
             value={formData.releaseDate}
             onChange={handleChange}
+            disabled={loading}
             required
           />
         </div>
@@ -109,6 +119,7 @@ function UploadMovie({ onMovieAdded }) {
             value={formData.posterUrl}
             onChange={handleChange}
             placeholder="https://example.com/poster.jpg"
+            disabled={loading}
           />
         </div>
 
