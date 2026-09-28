@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function UploadMovie({ token, onMovieAdded }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    genre: 'Drama',
+    genre: 'Action',
     language: 'English',
     movieType: 'movie',
     releaseDate: '',
@@ -15,16 +15,31 @@ function UploadMovie({ token, onMovieAdded }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [genres, setGenres] = useState([]);
+  const [languages, setLanguages] = useState([]);
 
-  const genres = [
-    'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Documentary',
-    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Musical',
-    'Romance', 'Sci-Fi', 'Mystery', 'Short', 'Sport', 'Thriller', 'War',
-    'Western', 'Commercial', 'Mass', 'Anime', 'Crime', 'K-Drama', 'C-Drama',
-    'J-Drama'
-  ];
+  useEffect(() => {
+    fetchGenresAndLanguages();
+  }, []);
 
-  const languages = ['English', 'Spanish', 'French', 'German', 'Italian', 'Japanese', 'Korean', 'Chinese', 'Hindi', 'Portuguese', 'Russian', 'Arabic', 'Turkish', 'Dutch', 'Swedish', 'Polish', 'Greek', 'Thai', 'Vietnamese'];
+  const fetchGenresAndLanguages = async () => {
+    try {
+      const [genresRes, languagesRes] = await Promise.all([
+        axios.get('/api/genres'),
+        axios.get('/api/languages')
+      ]);
+      setGenres(genresRes.data);
+      setLanguages(languagesRes.data);
+      if (genresRes.data.length > 0) {
+        setFormData(prev => ({ ...prev, genre: genresRes.data[0] }));
+      }
+      if (languagesRes.data.length > 0) {
+        setFormData(prev => ({ ...prev, language: languagesRes.data[0] }));
+      }
+    } catch (error) {
+      console.error('Error fetching genres/languages:', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,8 +91,8 @@ function UploadMovie({ token, onMovieAdded }) {
       setFormData({
         title: '',
         description: '',
-        genre: 'Drama',
-        language: 'English',
+        genre: genres[0] || 'Action',
+        language: languages[0] || 'English',
         movieType: 'movie',
         releaseDate: '',
         posterUrl: '',
