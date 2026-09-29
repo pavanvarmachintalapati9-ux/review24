@@ -4,6 +4,7 @@ import Login from './components/Login';
 import MovieListPopcorn from './components/MovieListPopcorn';
 import MovieDetailsNew from './components/MovieDetailsNew';
 import UploadMovie from './components/UploadMovie';
+import UpcomingMoviesCarousel from './components/UpcomingMoviesCarousel';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -291,6 +292,8 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
+        {!user?.isAdmin && <UpcomingMoviesCarousel movies={movies} token={token} user={user} />}
+
         {loading ? (
           <div className="loading-state">
             <div className="spinner"></div>
