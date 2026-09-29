@@ -155,6 +155,9 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert('Movie deleted successfully');
+      if (onRatingUpdate) {
+        onRatingUpdate();
+      }
       onClose();
     } catch (error) {
       console.error('Error deleting movie:', error);
