@@ -218,7 +218,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                 <p className="upcoming-genre">{carouselMovies[safeCurrentIndex].genre}</p>
                 <p className="upcoming-description">{carouselMovies[safeCurrentIndex].description}</p>
                 <div className="upcoming-likes-display">
-                  ❤️ {carouselMovies[safeCurrentIndex].likes || 0} likes
+                  <span>❤️ {carouselMovies[safeCurrentIndex].likes || 0} likes</span>
+                  <span>👎 {carouselMovies[safeCurrentIndex].dislikes || 0} dislikes</span>
                 </div>
               </div>
             </div>

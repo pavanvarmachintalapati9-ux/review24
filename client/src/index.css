@@ -2227,6 +2227,15 @@ html, body, #root {
   font-size: 14px;
   color: var(--primary-color);
   font-weight: bold;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.upcoming-likes-display span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* All Upcoming Modal */
