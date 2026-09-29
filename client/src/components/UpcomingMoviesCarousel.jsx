@@ -58,16 +58,16 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
     setCurrentIndex(0);
   }, [totalSlides]);
 
-  // Auto-scroll effect
+  // Auto-scroll effect (paused when modal is open)
   useEffect(() => {
-    if (totalSlides === 0) return;
+    if (totalSlides === 0 || selectedMovie) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
     }, AUTO_SCROLL_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [totalSlides]);
+  }, [totalSlides, selectedMovie]);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
