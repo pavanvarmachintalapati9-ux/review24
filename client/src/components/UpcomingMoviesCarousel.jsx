@@ -47,12 +47,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   // Show only first 9 in carousel
   const carouselMovies = upcomingMovies.slice(0, 9);
 
-  if (upcomingMovies.length === 0) {
-    return null;
-  }
-
   // Include "More" as 10th slide if there are more than 9 movies
-  const totalSlides = carouselMovies.length + (upcomingMovies.length > 9 ? 1 : 0);
+  const totalSlides = upcomingMovies.length > 0 ? carouselMovies.length + (upcomingMovies.length > 9 ? 1 : 0) : 0;
 
   // Reset index when slides change
   useEffect(() => {
@@ -162,6 +158,10 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   };
 
   const currentMovie = upcomingMovies[currentIndex];
+
+  if (upcomingMovies.length === 0) {
+    return <div className="upcoming-carousel-container"></div>;
+  }
 
   return (
     <div className="upcoming-carousel-container">

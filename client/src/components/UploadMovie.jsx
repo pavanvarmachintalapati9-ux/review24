@@ -56,14 +56,27 @@ function UploadMovie({ token, onMovieAdded }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Image size must be less than 5MB');
-        return;
-      }
+    if (!file) return;
 
-      setError('');
+    // Validate file size
+    const maxSize = 2 * 1024 * 1024; // 2MB instead of 5MB for faster processing
+    if (file.size > maxSize) {
+      setError('Image size must be less than 2MB');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      return;
+    }
+
+    setError('');
+
+    // Use setTimeout to prevent blocking UI
+    setTimeout(() => {
       const reader = new FileReader();
+
       reader.onload = (event) => {
         try {
           const base64 = event.target.result;
@@ -77,11 +90,13 @@ function UploadMovie({ token, onMovieAdded }) {
           setError('Error processing image. Please try again.');
         }
       };
+
       reader.onerror = () => {
         setError('Error reading file. Please try again.');
       };
+
       reader.readAsDataURL(file);
-    }
+    }, 0);
   };
 
   const handleSubmit = async (e) => {
