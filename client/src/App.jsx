@@ -39,6 +39,22 @@ function App() {
     }
   }, [token]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const menu = document.querySelector('.dropdown-menu');
+      const menuBtn = document.querySelector('.btn-menu');
+      if (menu && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showMenu]);
+
   const verifyToken = async () => {
     try {
       await axios.get('/api/auth/me', {
@@ -358,7 +374,7 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {!user?.isAdmin && <UpcomingMoviesCarousel movies={movies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
+        {!user?.isAdmin && !searchQuery && <UpcomingMoviesCarousel movies={movies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
 
         {loading ? (
           <div className="loading-state">

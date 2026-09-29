@@ -300,6 +300,32 @@ app.post('/api/movies', authenticateUser, (req, res) => {
   }
 });
 
+// DELETE movie (admin only)
+app.delete('/api/movies/:movieId', authenticateUser, (req, res) => {
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ error: 'Only admins can delete movies' });
+    }
+
+    const movieIndex = db.movies.findIndex(m => m.id === req.params.movieId);
+    if (movieIndex === -1) {
+      return res.status(404).json({ error: 'Movie not found' });
+    }
+
+    const deletedMovie = db.movies.splice(movieIndex, 1)[0];
+
+    // Also delete associated comments, reviews, likes, ratings
+    db.comments = db.comments.filter(c => c.movieId !== req.params.movieId);
+    db.reviews = db.reviews.filter(r => r.movieId !== req.params.movieId);
+    db.likes = db.likes.filter(l => l.movieId !== req.params.movieId);
+    db.ratings = db.ratings.filter(r => r.movieId !== req.params.movieId);
+
+    res.json({ message: 'Movie deleted successfully', movie: deletedMovie });
+  } catch (error) {
+    console.error('Error deleting movie:', error);
+    res.status(500).json({ error: 'Failed to delete movie' });
+  }
+});
 
 // GET AI review for movie
 app.post('/api/movies/:movieId/ai-review', async (req, res) => {

@@ -135,6 +135,24 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
     }
   };
 
+  const handleDeleteMovie = async () => {
+    if (!window.confirm('Are you sure you want to delete this movie? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await axios.delete(
+        `/api/movies/${movie.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Movie deleted successfully');
+      onClose();
+    } catch (error) {
+      console.error('Error deleting movie:', error);
+      alert('Failed to delete movie');
+    }
+  };
+
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i + 1} className={`star ${i < Math.round(rating) ? 'filled' : 'empty'}`}>
@@ -173,6 +191,16 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
               <span className="icon">❤️</span>
               <span>{likes} Likes</span>
             </button>
+            {user?.isAdmin && (
+              <button
+                className="action-btn delete-btn"
+                onClick={handleDeleteMovie}
+                title="Delete this movie"
+              >
+                <span className="icon">🗑️</span>
+                <span>Delete</span>
+              </button>
+            )}
           </div>
 
           {/* Rating Stars */}

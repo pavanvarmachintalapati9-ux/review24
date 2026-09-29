@@ -1421,6 +1421,16 @@ html, body, #root {
   color: var(--primary-color);
 }
 
+.action-btn.delete-btn {
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+.action-btn.delete-btn:hover {
+  background: rgba(244, 67, 54, 0.2);
+  border-color: var(--error-color);
+}
+
 .rating-section {
   background: rgba(255, 255, 255, 0.02);
   padding: 15px;
