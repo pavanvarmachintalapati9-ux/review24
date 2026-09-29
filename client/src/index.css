@@ -812,6 +812,22 @@ html, body, #root {
   cursor: not-allowed;
 }
 
+/* Centered button group for login forms */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.button-group .btn-submit,
+.button-group .btn-back {
+  flex: 1;
+  min-width: 140px;
+  max-width: 200px;
+}
+
 /* PopcornTime Style Grid */
 .popcorn-grid {
   display: grid;

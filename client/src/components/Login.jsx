@@ -117,9 +117,11 @@ function Login({ onLogin }) {
 
             {error && <div className="error-message">{error}</div>}
 
-            <button type="submit" disabled={loading} className="btn-submit">
-              {loading ? 'Sending OTP...' : 'Send OTP'}
-            </button>
+            <div className="button-group">
+              <button type="submit" disabled={loading} className="btn-submit">
+                {loading ? 'Sending OTP...' : 'Send OTP'}
+              </button>
+            </div>
 
             <p className="login-info">
               We'll send you a one-time password to verify your number
@@ -144,22 +146,23 @@ function Login({ onLogin }) {
 
             {error && <div className="error-message">{error}</div>}
 
-            <button type="submit" disabled={loading} className="btn-submit">
-              {loading ? 'Verifying...' : 'Verify OTP'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setStep('phone');
-                setOtp('');
-                setError('');
-              }}
-              className="btn-back"
-              disabled={loading}
-            >
-              ← Back
-            </button>
+            <div className="button-group">
+              <button type="submit" disabled={loading} className="btn-submit">
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('phone');
+                  setOtp('');
+                  setError('');
+                }}
+                className="btn-back"
+                disabled={loading}
+              >
+                ← Back
+              </button>
+            </div>
 
             <p className="otp-info">
               For testing: Use OTP 1234
@@ -185,22 +188,23 @@ function Login({ onLogin }) {
 
             {error && <div className="error-message">{error}</div>}
 
-            <button type="submit" disabled={loading} className="btn-submit">
-              {loading ? 'Logging in...' : 'Complete Login'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setStep('otp');
-                setName('');
-                setError('');
-              }}
-              className="btn-back"
-              disabled={loading}
-            >
-              ← Back
-            </button>
+            <div className="button-group">
+              <button type="submit" disabled={loading} className="btn-submit">
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('otp');
+                  setName('');
+                  setError('');
+                }}
+                className="btn-back"
+                disabled={loading}
+              >
+                ← Back
+              </button>
+            </div>
           </form>
         )}
 
