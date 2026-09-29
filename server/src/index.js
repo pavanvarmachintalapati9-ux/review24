@@ -166,6 +166,26 @@ app.get('/api/auth/me', authenticateUser, (req, res) => {
   res.json({ user: req.user });
 });
 
+// Update user name
+app.post('/api/auth/update-name', authenticateUser, (req, res) => {
+  const { name } = req.body;
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+
+  req.user.name = name.trim();
+  res.json({
+    token: req.user.token,
+    user: {
+      id: req.user.id,
+      phone: req.user.phone,
+      name: req.user.name,
+      isAdmin: req.user.isAdmin
+    }
+  });
+});
+
 // GET all movies with filters
 app.get('/api/movies', (req, res) => {
   const { genre, language, movieType, search } = req.query;
@@ -408,6 +428,7 @@ app.post('/api/movies/:movieId/comments', authenticateUser, (req, res) => {
     movieId,
     userId: req.user.id,
     phone: req.user.phone,
+    name: req.user.name || req.user.phone,
     text,
     createdAt: new Date().toISOString()
   };
@@ -441,6 +462,7 @@ app.post('/api/movies/:movieId/reviews', authenticateUser, (req, res) => {
     movieId,
     userId: req.user.id,
     phone: req.user.phone,
+    name: req.user.name || req.user.phone,
     text,
     createdAt: new Date().toISOString()
   };

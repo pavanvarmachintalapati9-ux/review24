@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-function UpcomingMoviesCarousel({ movies, token, user }) {
+function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislike }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [likes, setLikes] = useState(0);
@@ -11,9 +11,15 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
 
   // Filter and sort upcoming movies by likes (descending)
-  const upcomingMovies = movies
+  let upcomingMovies = movies
     .filter(movie => {
-      return new Date(movie.releaseDate) > new Date();
+      const isUpcoming = new Date(movie.releaseDate) > new Date();
+      if (!isUpcoming) return false;
+
+      // Filter by selected tab
+      if (selectedTab === 'movies') return movie.movieType === 'movie';
+      if (selectedTab === 'series') return movie.movieType === 'series';
+      return true; // Show all for 'home' tab
     })
     .sort((a, b) => {
       return (b.likes || 0) - (a.likes || 0);
@@ -67,6 +73,9 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
       );
       setLikes(response.data.likes);
       setLiked(response.data.liked);
+      if (onLikeDislike) {
+        onLikeDislike();
+      }
     } catch (error) {
       console.error('Error toggling like:', error);
     }
@@ -79,7 +88,9 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
         { type: 'dislike' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // You can add dislike count tracking if needed
+      if (onLikeDislike) {
+        onLikeDislike();
+      }
     } catch (error) {
       console.error('Error toggling dislike:', error);
     }
@@ -247,7 +258,7 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
                     {comments.map((comment) => (
                       <div key={comment.id} className="comment-item">
                         <div className="comment-header">
-                          <span className="comment-user">📱 {comment.phone}</span>
+                          <span className="comment-user">👤 {comment.name || comment.phone}</span>
                           <span className="comment-date">
                             {new Date(comment.createdAt).toLocaleDateString()}
                           </span>

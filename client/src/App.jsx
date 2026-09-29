@@ -313,7 +313,7 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {!user?.isAdmin && <UpcomingMoviesCarousel movies={movies} token={token} user={user} />}
+        {!user?.isAdmin && <UpcomingMoviesCarousel movies={movies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
 
         {loading ? (
           <div className="loading-state">

@@ -210,7 +210,7 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
               comments.map((comment) => (
                 <div key={comment.id} className="comment-box">
                   <div className="comment-header">
-                    <span className="user-info">👤 {comment.phone}</span>
+                    <span className="user-info">👤 {comment.name || comment.phone}</span>
                     <span className="timestamp">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
@@ -258,7 +258,7 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
               reviews.map((review) => (
                 <div key={review.id} className="review-box">
                   <div className="review-header">
-                    <span className="user-info">👤 {review.phone}</span>
+                    <span className="user-info">👤 {review.name || review.phone}</span>
                     <span className="timestamp">
                       {new Date(review.createdAt).toLocaleDateString()}
                     </span>

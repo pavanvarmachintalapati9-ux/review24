@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Login({ onLogin }) {
-  const [step, setStep] = useState('phone'); // 'phone' or 'otp'
+  const [step, setStep] = useState('phone'); // 'phone', 'otp', or 'name'
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userData, setUserData] = useState(null);
 
   // Debug: check if localStorage has data
   useEffect(() => {
@@ -50,11 +52,43 @@ function Login({ onLogin }) {
     setLoading(true);
     try {
       const response = await axios.post('/api/auth/verify-otp', { phone, otp });
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      onLogin(response.data.token, response.data.user);
+      setUserData(response.data);
+      setStep('name');
+      setError('');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to verify OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitName = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Update name on the backend
+      const response = await axios.post('/api/auth/update-name',
+        { name: name.trim() },
+        { headers: { Authorization: `Bearer ${userData.token}` } }
+      );
+
+      // Add name to user data
+      const userWithName = {
+        ...response.data.user
+      };
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(userWithName));
+      onLogin(response.data.token, userWithName);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to save name');
     } finally {
       setLoading(false);
     }
@@ -91,7 +125,7 @@ function Login({ onLogin }) {
               We'll send you a one-time password to verify your number
             </p>
           </form>
-        ) : (
+        ) : step === 'otp' ? (
           <form onSubmit={handleVerifyOTP}>
             <h2>Enter OTP</h2>
             <p className="otp-info">OTP sent to {phone}</p>
@@ -130,6 +164,43 @@ function Login({ onLogin }) {
             <p className="otp-info">
               For testing: Use OTP 1234
             </p>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmitName}>
+            <h2>Enter Your Name</h2>
+            <p className="otp-info">Phone: {phone}</p>
+
+            <div className="form-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                disabled={loading}
+                autoFocus
+              />
+              <small>This name will be displayed when you comment or review</small>
+            </div>
+
+            {error && <div className="error-message">{error}</div>}
+
+            <button type="submit" disabled={loading} className="btn-submit">
+              {loading ? 'Logging in...' : 'Complete Login'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStep('otp');
+                setName('');
+                setError('');
+              }}
+              className="btn-back"
+              disabled={loading}
+            >
+              ← Back
+            </button>
           </form>
         )}
 
