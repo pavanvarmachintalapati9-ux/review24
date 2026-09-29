@@ -18,7 +18,7 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
 
-  // Filter and sort upcoming movies by likes (descending)
+  // Filter and sort upcoming movies by total engagement (likes + dislikes)
   let upcomingMovies = [];
   try {
     upcomingMovies = (movies || [])
@@ -40,7 +40,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
         }
       })
       .sort((a, b) => {
-        return (b.likes || 0) - (a.likes || 0);
+        const totalEngagementA = (a.likes || 0) + (a.dislikes || 0);
+        const totalEngagementB = (b.likes || 0) + (b.dislikes || 0);
+        return totalEngagementB - totalEngagementA;
       });
   } catch (error) {
     console.error('Error processing carousel movies:', error);
