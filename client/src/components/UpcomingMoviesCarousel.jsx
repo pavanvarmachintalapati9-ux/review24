@@ -15,6 +15,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   const [newComment, setNewComment] = useState('');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   // Filter and sort upcoming movies by likes (descending)
   let upcomingMovies = [];
@@ -159,6 +161,32 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
     } catch (error) {
       console.error('Error submitting comment:', error);
       alert('Failed to submit comment');
+    }
+  };
+
+  const handleReplySubmit = async (e, parentCommentId) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+
+    try {
+      const response = await axios.post(
+        `/api/movies/${selectedMovie.id}/comments`,
+        { text: replyText, parentCommentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update comments with the new reply
+      const updatedComments = comments.map(comment =>
+        comment.id === parentCommentId
+          ? { ...comment, replies: [...(comment.replies || []), response.data] }
+          : comment
+      );
+      setComments(updatedComments);
+      setReplyText('');
+      setReplyingTo(null);
+    } catch (error) {
+      console.error('Error submitting reply:', error);
+      alert('Failed to submit reply');
     }
   };
 
@@ -321,6 +349,57 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                           </span>
                         </div>
                         <p className="comment-text">{comment.text}</p>
+                        <button
+                          className="btn-reply-small"
+                          onClick={() => setReplyingTo(comment.id)}
+                        >
+                          Reply
+                        </button>
+
+                        {/* Reply Form */}
+                        {replyingTo === comment.id && (
+                          <form onSubmit={(e) => handleReplySubmit(e, comment.id)} className="reply-form-small">
+                            <textarea
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Write a reply..."
+                              rows="2"
+                              className="reply-input-small"
+                            />
+                            <div className="reply-buttons-small">
+                              <button type="submit" className="btn-submit-reply-small">
+                                Post
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-cancel-reply-small"
+                                onClick={() => {
+                                  setReplyingTo(null);
+                                  setReplyText('');
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        )}
+
+                        {/* Replies List */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="replies-container-small">
+                            {comment.replies.map((reply) => (
+                              <div key={reply.id} className="reply-item-small">
+                                <div className="reply-header-small">
+                                  <span className="reply-user">👤 {reply.name || reply.phone}</span>
+                                  <span className="reply-date">
+                                    {new Date(reply.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="reply-text-small">{reply.text}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

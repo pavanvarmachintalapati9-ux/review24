@@ -462,6 +462,7 @@ app.post('/api/movies/:movieId/comments', authenticateUser, (req, res) => {
     phone: req.user.phone,
     name: req.user.name || req.user.phone,
     text,
+    parentCommentId: req.body.parentCommentId || null,
     createdAt: new Date().toISOString()
   };
 
@@ -469,10 +470,20 @@ app.post('/api/movies/:movieId/comments', authenticateUser, (req, res) => {
   res.status(201).json(comment);
 });
 
-// GET comments for movie
+// GET comments for movie with nested replies
 app.get('/api/movies/:movieId/comments', (req, res) => {
-  const comments = db.comments.filter(c => c.movieId === req.params.movieId).reverse();
-  res.json(comments);
+  const allComments = db.comments.filter(c => c.movieId === req.params.movieId);
+
+  // Get only parent comments (no parentCommentId)
+  const parentComments = allComments.filter(c => !c.parentCommentId);
+
+  // Attach replies to each parent comment
+  const commentsWithReplies = parentComments.map(comment => ({
+    ...comment,
+    replies: allComments.filter(c => c.parentCommentId === comment.id).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+  })).reverse();
+
+  res.json(commentsWithReplies);
 });
 
 // POST review for movie (separate from comments)

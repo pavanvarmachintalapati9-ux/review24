@@ -12,6 +12,8 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
   const [newComment, setNewComment] = useState('');
   const [newReview, setNewReview] = useState('');
   const [activeTab, setActiveTab] = useState('comments');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -86,6 +88,32 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
     } catch (error) {
       console.error('Error submitting comment:', error);
       alert('Failed to submit comment');
+    }
+  };
+
+  const handleReplySubmit = async (e, parentCommentId) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+
+    try {
+      const response = await axios.post(
+        `/api/movies/${movie.id}/comments`,
+        { text: replyText, parentCommentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update comments with the new reply
+      const updatedComments = comments.map(comment =>
+        comment.id === parentCommentId
+          ? { ...comment, replies: [...(comment.replies || []), response.data] }
+          : comment
+      );
+      setComments(updatedComments);
+      setReplyText('');
+      setReplyingTo(null);
+    } catch (error) {
+      console.error('Error submitting reply:', error);
+      alert('Failed to submit reply');
     }
   };
 
@@ -216,6 +244,57 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
                     </span>
                   </div>
                   <p className="comment-text">{comment.text}</p>
+                  <button
+                    className="btn-reply"
+                    onClick={() => setReplyingTo(comment.id)}
+                  >
+                    Reply
+                  </button>
+
+                  {/* Reply Form */}
+                  {replyingTo === comment.id && (
+                    <form onSubmit={(e) => handleReplySubmit(e, comment.id)} className="reply-form">
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Write a reply..."
+                        rows="2"
+                        className="reply-input"
+                      />
+                      <div className="reply-buttons">
+                        <button type="submit" className="btn-submit-reply">
+                          Post Reply
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-cancel-reply"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyText('');
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* Replies List */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="replies-container">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="reply-box">
+                          <div className="reply-header">
+                            <span className="user-info">👤 {reply.name || reply.phone}</span>
+                            <span className="timestamp">
+                              {new Date(reply.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="reply-text">{reply.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
