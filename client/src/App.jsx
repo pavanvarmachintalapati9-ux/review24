@@ -325,7 +325,7 @@ function App() {
         <div className="modal-overlay" onClick={() => setShowUploadForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Upload New Movie</h2>
+              <h2>Upload</h2>
               <button className="close-btn" onClick={() => setShowUploadForm(false)}>
                 ×
               </button>
