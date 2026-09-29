@@ -24,6 +24,7 @@ function App() {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('home');
+  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -56,7 +57,7 @@ function App() {
     if (token) {
       fetchMovies();
     }
-  }, [selectedGenre, selectedLanguage, selectedTab, searchQuery, token]);
+  }, [selectedGenre, selectedLanguage, selectedTab, searchQuery, showUpcomingOnly, token]);
 
   const fetchGenres = async () => {
     try {
@@ -88,8 +89,16 @@ function App() {
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
 
+      // Filter to only upcoming movies if showUpcomingOnly is true
+      let filtered = response.data;
+      if (showUpcomingOnly) {
+        filtered = response.data.filter(movie =>
+          new Date(movie.releaseDate) > new Date()
+        );
+      }
+
       // Sort by release date (latest first)
-      const sortedMovies = response.data.sort((a, b) => {
+      const sortedMovies = filtered.sort((a, b) => {
         return new Date(b.releaseDate) - new Date(a.releaseDate);
       });
 
@@ -147,6 +156,21 @@ function App() {
 
             {showMenu && (
               <div className="dropdown-menu">
+                <div className="menu-section">
+                  <label>Upcoming Releases</label>
+                  <button
+                    className={`btn-menu-toggle ${showUpcomingOnly ? 'active' : ''}`}
+                    onClick={() => {
+                      setShowUpcomingOnly(!showUpcomingOnly);
+                      setShowMenu(false);
+                    }}
+                  >
+                    {showUpcomingOnly ? '✓ Show Only Upcoming' : '○ Show All'}
+                  </button>
+                </div>
+
+                <div className="menu-divider"></div>
+
                 <div className="menu-section">
                   <label>Language</label>
                   <select

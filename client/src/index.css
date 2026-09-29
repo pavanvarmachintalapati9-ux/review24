@@ -1255,6 +1255,30 @@ html, body, #root {
   color: white;
 }
 
+.btn-menu-toggle {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+
+.btn-menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-color);
+}
+
+.btn-menu-toggle.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
 .btn-upload-menu {
   width: 100%;
   padding: 10px;
