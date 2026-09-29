@@ -102,16 +102,19 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
 
   const handleDislike = async () => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `/api/movies/${selectedMovie.id}/like`,
         { type: 'dislike' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      setLikes(response.data.likes);
+      setLiked(false);
       if (onLikeDislike) {
         onLikeDislike();
       }
     } catch (error) {
       console.error('Error toggling dislike:', error);
+      alert('Failed to dislike movie');
     }
   };
 

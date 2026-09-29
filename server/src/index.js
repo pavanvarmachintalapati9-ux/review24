@@ -321,7 +321,7 @@ app.post('/api/movies/:movieId/ai-review', async (req, res) => {
 // POST like a movie
 app.post('/api/movies/:movieId/like', authenticateUser, (req, res) => {
   const { movieId } = req.params;
-  const { type } = req.body; // 'like' or 'unlike'
+  const { type } = req.body; // 'like', 'unlike', or 'dislike'
 
   const movie = db.movies.find(m => m.id === movieId);
   if (!movie) {
@@ -340,7 +340,7 @@ app.post('/api/movies/:movieId/like', authenticateUser, (req, res) => {
         createdAt: new Date().toISOString()
       });
     }
-  } else if (type === 'unlike') {
+  } else if (type === 'unlike' || type === 'dislike') {
     if (existingLike) {
       db.likes = db.likes.filter(l => l.id !== existingLike.id);
     }
