@@ -1894,6 +1894,17 @@ html, body, #root {
   padding: 20px 0;
 }
 
+.upcoming-type-badge {
+  display: inline-block;
+  background: rgba(229, 9, 20, 0.3);
+  color: var(--primary-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
 .upcoming-title {
   font-size: 32px;
   font-weight: bold;

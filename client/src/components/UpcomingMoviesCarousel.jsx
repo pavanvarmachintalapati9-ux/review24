@@ -109,6 +109,9 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
             </div>
 
             <div className="upcoming-info">
+              <div className="upcoming-type-badge">
+                {currentMovie.movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+              </div>
               <h3 className="upcoming-title">{currentMovie.title}</h3>
               <p className="upcoming-release">
                 Coming on {new Date(currentMovie.releaseDate).toLocaleDateString()}
@@ -154,6 +157,9 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
               </div>
 
               <div className="upcoming-modal-info">
+                <div className="upcoming-type-badge">
+                  {selectedMovie.movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+                </div>
                 <p className="modal-release">
                   <strong>Release Date:</strong> {new Date(selectedMovie.releaseDate).toLocaleDateString()}
                 </p>
