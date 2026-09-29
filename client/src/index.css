@@ -872,42 +872,13 @@ html, body, #root {
   color: var(--text-secondary);
 }
 
-.poster-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
+/* Popcorn card hover effect - brightens on hover */
+.popcorn-card:hover .popcorn-poster {
+  filter: brightness(1.1);
 }
 
-.popcorn-card:hover .poster-overlay {
-  opacity: 1;
-}
-
-.play-btn {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.play-btn:hover {
-  background: #c4081c;
-  transform: scale(1.1);
+.popcorn-poster {
+  transition: filter 0.3s ease;
 }
 
 .popcorn-info {

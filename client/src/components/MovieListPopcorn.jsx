@@ -13,9 +13,6 @@ function MovieListPopcorn({ movies, onSelectMovie }) {
             ) : (
               <div className="poster-placeholder">📽️</div>
             )}
-            <div className="poster-overlay">
-              <button className="play-btn">▶</button>
-            </div>
           </div>
 
           <div className="popcorn-info">
