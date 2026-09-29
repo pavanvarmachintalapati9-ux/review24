@@ -248,6 +248,7 @@ function App() {
               onClose={() => setSelectedMovie(null)}
               user={user}
               token={token}
+              onRatingUpdate={fetchMovies}
             />
           </div>
         </div>

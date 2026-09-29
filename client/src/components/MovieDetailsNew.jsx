@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function MovieDetailsNew({ movie, onClose, user, token }) {
+function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
   const [userRating, setUserRating] = useState(0);
@@ -63,6 +63,9 @@ function MovieDetailsNew({ movie, onClose, user, token }) {
       setUserRating(rating);
       setAvgRating(response.data.avgRating);
       setRatingCount(response.data.ratingCount);
+      if (onRatingUpdate) {
+        onRatingUpdate();
+      }
     } catch (error) {
       console.error('Error submitting rating:', error);
     }
