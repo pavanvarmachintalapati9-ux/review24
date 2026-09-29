@@ -5,6 +5,7 @@ import MovieListPopcorn from './components/MovieListPopcorn';
 import MovieDetailsNew from './components/MovieDetailsNew';
 import UploadMovie from './components/UploadMovie';
 import UpcomingMoviesCarousel from './components/UpcomingMoviesCarousel';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -183,6 +184,7 @@ function App() {
   }
 
   return (
+    <ErrorBoundary>
     <div className="app-container">
       {/* Header */}
       <header className="header-new">
@@ -372,6 +374,7 @@ function App() {
         )}
       </main>
     </div>
+    </ErrorBoundary>
   );
 }
 
