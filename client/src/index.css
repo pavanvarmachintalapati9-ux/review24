@@ -1871,42 +1871,13 @@ html, body, #root {
   z-index: 10;
 }
 
-.upcoming-poster .poster-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
+/* Poster hover effect - brightens on hover */
+.upcoming-poster {
+  transition: filter 0.3s ease;
 }
 
-.upcoming-poster:hover .poster-overlay {
-  opacity: 1;
-}
-
-.upcoming-poster .play-btn {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upcoming-poster .play-btn:hover {
-  background: #c4081c;
-  transform: scale(1.1);
+.upcoming-poster:hover {
+  filter: brightness(1.1);
 }
 
 .upcoming-info {

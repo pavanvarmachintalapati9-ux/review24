@@ -225,21 +225,17 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
             </div>
           ) : canRenderMovieCard ? (
             <div className="upcoming-movie-card">
-              <div className="upcoming-poster">
+              <div
+                className="upcoming-poster"
+                onClick={() => handleSelectMovie(carouselMovies[safeCurrentIndex])}
+                style={{ cursor: 'pointer' }}
+              >
                 {carouselMovies[safeCurrentIndex].posterUrl ? (
                   <img src={carouselMovies[safeCurrentIndex].posterUrl} alt={carouselMovies[safeCurrentIndex].title} />
                 ) : (
                   <div className="poster-placeholder">📽️</div>
                 )}
                 <div className="new-release-badge">🆕 New Release</div>
-                <div className="poster-overlay">
-                  <button
-                    className="play-btn"
-                    onClick={() => handleSelectMovie(carouselMovies[safeCurrentIndex])}
-                  >
-                    ▶
-                  </button>
-                </div>
               </div>
 
               <div className="upcoming-info">
