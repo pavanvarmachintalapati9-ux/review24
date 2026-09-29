@@ -1,16 +1,4 @@
 function MovieListPopcorn({ movies, onSelectMovie }) {
-  const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className={`star ${i <= Math.round(rating) ? 'filled' : 'empty'}`}>
-          ★
-        </span>
-      );
-    }
-    return stars;
-  };
-
   return (
     <div className="popcorn-grid">
       {movies.map((movie) => (
@@ -31,7 +19,12 @@ function MovieListPopcorn({ movies, onSelectMovie }) {
           </div>
 
           <div className="popcorn-info">
-            <h3 className="movie-title">{movie.title}</h3>
+            <div className="title-rating-row">
+              <h3 className="movie-title">{movie.title}</h3>
+              {movie.ratingCount > 0 && (
+                <span className="rating-badge">{movie.avgRating}/5</span>
+              )}
+            </div>
 
             <div className="movie-meta-row">
               <span className="genre">{movie.genre}</span>
@@ -39,15 +32,6 @@ function MovieListPopcorn({ movies, onSelectMovie }) {
                 {new Date(movie.releaseDate).getFullYear()}
               </span>
             </div>
-
-            {movie.ratingCount > 0 && (
-              <div className="rating-section">
-                <div className="stars-small">
-                  {renderStars(movie.avgRating)}
-                </div>
-                <span className="rating-text">{movie.avgRating}/5</span>
-              </div>
-            )}
 
             <div className="engagement-stats">
               {movie.likes > 0 && (
