@@ -157,6 +157,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
       );
       setComments([response.data, ...comments]);
       setNewComment('');
+      if (onLikeDislike) {
+        onLikeDislike();
+      }
     } catch (error) {
       console.error('Error submitting comment:', error);
       alert('Failed to submit comment');
@@ -183,6 +186,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
       setComments(updatedComments);
       setReplyText('');
       setReplyingTo(null);
+      if (onLikeDislike) {
+        onLikeDislike();
+      }
     } catch (error) {
       console.error('Error submitting reply:', error);
       alert('Failed to submit reply');

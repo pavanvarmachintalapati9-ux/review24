@@ -85,6 +85,9 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
       );
       setComments([response.data, ...comments]);
       setNewComment('');
+      if (onRatingUpdate) {
+        onRatingUpdate();
+      }
     } catch (error) {
       console.error('Error submitting comment:', error);
       alert('Failed to submit comment');
@@ -111,6 +114,9 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
       setComments(updatedComments);
       setReplyText('');
       setReplyingTo(null);
+      if (onRatingUpdate) {
+        onRatingUpdate();
+      }
     } catch (error) {
       console.error('Error submitting reply:', error);
       alert('Failed to submit reply');
@@ -129,6 +135,9 @@ function MovieDetailsNew({ movie, onClose, user, token, onRatingUpdate }) {
       );
       setReviews([response.data, ...reviews]);
       setNewReview('');
+      if (onRatingUpdate) {
+        onRatingUpdate();
+      }
     } catch (error) {
       console.error('Error submitting review:', error);
       alert('Failed to submit review');
