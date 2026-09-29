@@ -30,13 +30,19 @@ function UploadMovie({ token, onMovieAdded }) {
         axios.get('/api/genres'),
         axios.get('/api/languages')
       ]);
-      setGenres(genresRes.data);
-      setLanguages(languagesRes.data);
-      if (genresRes.data.length > 0) {
-        setFormData(prev => ({ ...prev, genre: genresRes.data[0] }));
+
+      const genresData = Array.isArray(genresRes.data) ? genresRes.data : [];
+      const languagesData = Array.isArray(languagesRes.data) ? languagesRes.data : [];
+
+      setGenres(genresData);
+      setLanguages(languagesData);
+
+      if (genresData.length > 0) {
+        setFormData(prev => ({ ...prev, genre: genresData[0] }));
       }
     } catch (error) {
       console.error('Error fetching genres/languages:', error);
+      setError('Failed to load genres and languages');
     }
   };
 
@@ -56,13 +62,23 @@ function UploadMovie({ token, onMovieAdded }) {
         return;
       }
 
+      setError('');
       const reader = new FileReader();
       reader.onload = (event) => {
-        setImagePreview(event.target.result);
-        setFormData(prev => ({
-          ...prev,
-          posterImage: event.target.result
-        }));
+        try {
+          const base64 = event.target.result;
+          setImagePreview(base64);
+          setFormData(prev => ({
+            ...prev,
+            posterImage: base64
+          }));
+        } catch (err) {
+          console.error('Error processing image:', err);
+          setError('Error processing image. Please try again.');
+        }
+      };
+      reader.onerror = () => {
+        setError('Error reading file. Please try again.');
       };
       reader.readAsDataURL(file);
     }
@@ -84,12 +100,11 @@ function UploadMovie({ token, onMovieAdded }) {
 
     setLoading(true);
     try {
-      console.log('Uploading movie with token:', token);
-      console.log('Authorization header:', `Bearer ${token}`);
       const response = await axios.post('/api/movies', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Movie uploaded successfully:', response.data);
+
+      // Reset form after successful upload
       setFormData({
         title: '',
         description: '',
@@ -101,20 +116,27 @@ function UploadMovie({ token, onMovieAdded }) {
         posterImage: null
       });
       setImagePreview(null);
-      onMovieAdded();
+      setError('');
+
+      // Call callback to refresh data
+      if (onMovieAdded) {
+        onMovieAdded();
+      }
     } catch (error) {
       console.error('Error uploading movie:', error);
-      const errorMsg = error.response?.data?.error || 'Failed to upload movie';
 
-      // If token is invalid, clear it and prompt user to login again
-      if (errorMsg === 'Invalid token' || error.response?.status === 401) {
+      if (error.response?.status === 401) {
+        // Token is invalid
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setError('Your session has expired. Please login again.');
-        // Optionally reload the page to show login screen
-        setTimeout(() => window.location.reload(), 2000);
+        setTimeout(() => window.location.reload(), 1500);
+      } else if (error.response?.data?.error) {
+        setError(error.response.data.error);
+      } else if (error.message) {
+        setError(`Error: ${error.message}`);
       } else {
-        setError(errorMsg);
+        setError('Failed to upload movie. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -252,7 +274,7 @@ function UploadMovie({ token, onMovieAdded }) {
         </div>
 
         <button type="submit" className="btn-submit" disabled={loading}>
-          {loading ? 'Uploading...' : 'Upload Movie'}
+          {loading ? 'Uploading...' : 'Upload'}
         </button>
       </form>
     </div>
