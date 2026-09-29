@@ -22,6 +22,7 @@ function App() {
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState('home');
 
   useEffect(() => {
     if (token) {
@@ -54,7 +55,7 @@ function App() {
     if (token) {
       fetchMovies();
     }
-  }, [selectedGenre, selectedLanguage, selectedMovieType, searchQuery, token]);
+  }, [selectedGenre, selectedLanguage, selectedTab, searchQuery, token]);
 
   const fetchGenres = async () => {
     try {
@@ -80,11 +81,18 @@ function App() {
       const params = new URLSearchParams();
       if (selectedGenre) params.append('genre', selectedGenre);
       if (selectedLanguage) params.append('language', selectedLanguage);
-      if (selectedMovieType) params.append('movieType', selectedMovieType);
+      if (selectedTab === 'movies') params.append('movieType', 'movie');
+      else if (selectedTab === 'series') params.append('movieType', 'series');
       if (searchQuery) params.append('search', searchQuery);
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
-      setMovies(response.data);
+
+      // Sort by release date (latest first)
+      const sortedMovies = response.data.sort((a, b) => {
+        return new Date(b.releaseDate) - new Date(a.releaseDate);
+      });
+
+      setMovies(sortedMovies);
     } catch (error) {
       console.error('Error fetching movies:', error);
     } finally {
@@ -207,27 +215,38 @@ function App() {
             <button className="btn-search" onClick={fetchMovies}>
               Search
             </button>
-            <button
-              className={`btn-filter ${selectedMovieType === 'movie' ? 'active' : ''}`}
-              onClick={() => setSelectedMovieType(selectedMovieType === 'movie' ? '' : 'movie')}
-              title="Movies"
-            >
-              🎬 Movies
-            </button>
-            <button
-              className={`btn-filter ${selectedMovieType === 'series' ? 'active' : ''}`}
-              onClick={() => setSelectedMovieType(selectedMovieType === 'series' ? '' : 'series')}
-              title="Series"
-            >
-              📺 Series
-            </button>
+            {!user?.isAdmin && (
+              <>
+                <button
+                  className={`btn-filter ${selectedTab === 'home' ? 'active' : ''}`}
+                  onClick={() => setSelectedTab('home')}
+                  title="Home"
+                >
+                  🏠 Home
+                </button>
+                <button
+                  className={`btn-filter ${selectedTab === 'movies' ? 'active' : ''}`}
+                  onClick={() => setSelectedTab('movies')}
+                  title="Movies"
+                >
+                  🎬 Movies
+                </button>
+                <button
+                  className={`btn-filter ${selectedTab === 'series' ? 'active' : ''}`}
+                  onClick={() => setSelectedTab('series')}
+                  title="Series"
+                >
+                  📺 Series
+                </button>
+              </>
+            )}
             {user?.isAdmin && (
               <button
                 className="btn-upload"
                 onClick={() => setShowUploadForm(true)}
-                title="Upload Movie"
+                title="Upload"
               >
-                + Upload Movies
+                + Upload
               </button>
             )}
           </div>
