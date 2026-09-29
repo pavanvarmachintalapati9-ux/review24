@@ -20,7 +20,6 @@ function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [movieType, setMovieType] = useState('movie');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +53,7 @@ function App() {
     if (token) {
       fetchMovies();
     }
-  }, [selectedGenre, selectedLanguage, movieType, searchQuery, token]);
+  }, [selectedGenre, selectedLanguage, searchQuery, token]);
 
   const fetchGenres = async () => {
     try {
@@ -80,7 +79,6 @@ function App() {
       const params = new URLSearchParams();
       if (selectedGenre) params.append('genre', selectedGenre);
       if (selectedLanguage) params.append('language', selectedLanguage);
-      if (movieType) params.append('movieType', movieType);
       if (searchQuery) params.append('search', searchQuery);
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
@@ -139,6 +137,15 @@ function App() {
             <button className="btn-search" onClick={fetchMovies}>
               Search
             </button>
+            {user?.isAdmin && (
+              <button
+                className="btn-upload"
+                onClick={() => setShowUploadForm(true)}
+                title="Upload Movie"
+              >
+                + Upload Movies
+              </button>
+            )}
           </div>
 
           {/* Hamburger Menu */}
@@ -190,44 +197,6 @@ function App() {
                     ))}
                   </select>
                 </div>
-
-                <div className="menu-section">
-                  <label>Type</label>
-                  <div className="type-options">
-                    <button
-                      className={`type-btn ${movieType === 'movie' ? 'active' : ''}`}
-                      onClick={() => {
-                        setMovieType('movie');
-                        setShowMenu(false);
-                      }}
-                    >
-                      🎬 Movies
-                    </button>
-                    <button
-                      className={`type-btn ${movieType === 'tv-show' ? 'active' : ''}`}
-                      onClick={() => {
-                        setMovieType('tv-show');
-                        setShowMenu(false);
-                      }}
-                    >
-                      📺 TV Shows
-                    </button>
-                  </div>
-                </div>
-
-                {user?.isAdmin && (
-                  <div className="menu-section">
-                    <button
-                      className="btn-upload-menu"
-                      onClick={() => {
-                        setShowUploadForm(true);
-                        setShowMenu(false);
-                      }}
-                    >
-                      + Upload Movie
-                    </button>
-                  </div>
-                )}
 
                 <div className="menu-divider"></div>
 
@@ -289,7 +258,7 @@ function App() {
         {loading ? (
           <div className="loading-state">
             <div className="spinner"></div>
-            <p>Loading {movieType === 'movie' ? 'movies' : 'TV shows'}...</p>
+            <p>Loading content...</p>
           </div>
         ) : movies.length > 0 ? (
           <MovieListPopcorn movies={movies} onSelectMovie={setSelectedMovie} />

@@ -181,9 +181,8 @@ app.get('/api/movies', (req, res) => {
 
   if (movieType) {
     filtered = filtered.filter(m => m.movieType === movieType);
-  } else {
-    filtered = filtered.filter(m => m.movieType === 'movie');
   }
+  // If movieType is not specified, show all content (movies and series)
 
   if (search) {
     const searchLower = search.toLowerCase();

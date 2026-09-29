@@ -193,7 +193,7 @@ function UploadMovie({ token, onMovieAdded }) {
             disabled={loading}
           >
             <option value="movie">Movie</option>
-            <option value="tv-show">TV Show</option>
+            <option value="series">Series</option>
           </select>
         </div>
 

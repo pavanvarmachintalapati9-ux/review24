@@ -1031,6 +1031,22 @@ html, body, #root {
   background: #c4081c;
 }
 
+.btn-upload {
+  padding: 8px 16px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background 0.3s;
+}
+
+.btn-upload:hover {
+  background: #c4081c;
+}
+
 .header-right {
   display: flex;
   gap: 12px;
