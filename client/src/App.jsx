@@ -8,7 +8,7 @@ import UpcomingMoviesCarousel from './components/UpcomingMoviesCarousel';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
