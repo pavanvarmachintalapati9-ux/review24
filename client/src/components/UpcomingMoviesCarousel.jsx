@@ -23,13 +23,10 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   try {
     upcomingMovies = (movies || [])
       .filter(movie => {
-        // Ensure movie and releaseDate exist
-        if (!movie || !movie.releaseDate) return false;
+        // Ensure movie exists
+        if (!movie) return false;
 
         try {
-          const isUpcoming = new Date(movie.releaseDate) > new Date();
-          if (!isUpcoming) return false;
-
           // Filter by selected tab
           if (selectedTab === 'movies') return movie.movieType === 'movie';
           if (selectedTab === 'series') return movie.movieType === 'series';

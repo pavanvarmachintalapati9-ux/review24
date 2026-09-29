@@ -14,6 +14,7 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [movies, setMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
@@ -115,24 +116,41 @@ function App() {
       if (!Array.isArray(response.data)) {
         console.error('Invalid movies response:', response.data);
         setMovies([]);
+        setUpcomingMovies([]);
         return;
       }
 
-      // Filter to only upcoming movies if showUpcomingOnly is true
-      let filtered = response.data;
-      if (showUpcomingOnly) {
-        filtered = response.data.filter(movie => {
-          try {
-            return movie && movie.releaseDate && new Date(movie.releaseDate) > new Date();
-          } catch (error) {
-            console.error('Error filtering movie:', movie, error);
-            return false;
+      // Separate released and upcoming movies
+      const released = [];
+      const upcoming = [];
+      const now = new Date();
+
+      response.data.forEach(movie => {
+        try {
+          if (movie && movie.releaseDate) {
+            const releaseDate = new Date(movie.releaseDate);
+            if (releaseDate > now) {
+              upcoming.push(movie);
+            } else {
+              released.push(movie);
+            }
+          } else {
+            released.push(movie);
           }
-        });
+        } catch (error) {
+          console.error('Error categorizing movie:', movie, error);
+          released.push(movie);
+        }
+      });
+
+      // Filter released movies if showUpcomingOnly is true
+      let filteredReleased = released;
+      if (showUpcomingOnly) {
+        filteredReleased = [];
       }
 
       // Sort by release date (latest first)
-      const sortedMovies = filtered.sort((a, b) => {
+      const sortedReleased = filteredReleased.sort((a, b) => {
         try {
           return new Date(b.releaseDate) - new Date(a.releaseDate);
         } catch (error) {
@@ -141,10 +159,27 @@ function App() {
         }
       });
 
-      setMovies(sortedMovies);
+      // Sort upcoming by engagement (likes + dislikes) then by release date
+      const sortedUpcoming = upcoming.sort((a, b) => {
+        try {
+          const totalEngagementA = (a.likes || 0) + (a.dislikes || 0);
+          const totalEngagementB = (b.likes || 0) + (b.dislikes || 0);
+          if (totalEngagementB !== totalEngagementA) {
+            return totalEngagementB - totalEngagementA;
+          }
+          return new Date(a.releaseDate) - new Date(b.releaseDate);
+        } catch (error) {
+          console.error('Error sorting upcoming movies:', error);
+          return 0;
+        }
+      });
+
+      setMovies(sortedReleased);
+      setUpcomingMovies(sortedUpcoming);
     } catch (error) {
       console.error('Error fetching movies:', error);
       setMovies([]);
+      setUpcomingMovies([]);
     } finally {
       setLoading(false);
     }
@@ -164,6 +199,7 @@ function App() {
     setToken(null);
     setUser(null);
     setMovies([]);
+    setUpcomingMovies([]);
     setSelectedMovie(null);
   };
 
@@ -374,7 +410,7 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {!user?.isAdmin && !searchQuery && <UpcomingMoviesCarousel movies={movies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
+        {!user?.isAdmin && !searchQuery && <UpcomingMoviesCarousel movies={upcomingMovies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
 
         {loading ? (
           <div className="loading-state">
