@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+
+// Auto-scroll time interval in milliseconds (change this value to adjust speed)
+const AUTO_SCROLL_INTERVAL = 2000; // 2 seconds
 
 function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislike }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,6 +37,15 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
 
   // Include "More" as 10th slide if there are more than 9 movies
   const totalSlides = carouselMovies.length + (upcomingMovies.length > 9 ? 1 : 0);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
+    }, AUTO_SCROLL_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [totalSlides]);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
