@@ -182,7 +182,7 @@ function App() {
                     setShowMenu(false);
                   }}
                 >
-                  {showUpcomingOnly ? '✓ Only Upcoming Releases' : '○ All Releases'}
+                  {showUpcomingOnly ? '✓ Upcoming Releases' : 'Upcoming Releases'}
                 </button>
 
                 <div className="menu-divider"></div>
