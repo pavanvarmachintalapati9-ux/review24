@@ -156,18 +156,15 @@ function App() {
 
             {showMenu && (
               <div className="dropdown-menu">
-                <div className="menu-section">
-                  <label>Upcoming Releases</label>
-                  <button
-                    className={`btn-menu-toggle ${showUpcomingOnly ? 'active' : ''}`}
-                    onClick={() => {
-                      setShowUpcomingOnly(!showUpcomingOnly);
-                      setShowMenu(false);
-                    }}
-                  >
-                    {showUpcomingOnly ? '✓ Show Only Upcoming' : '○ Show All'}
-                  </button>
-                </div>
+                <button
+                  className={`btn-menu-toggle full-width ${showUpcomingOnly ? 'active' : ''}`}
+                  onClick={() => {
+                    setShowUpcomingOnly(!showUpcomingOnly);
+                    setShowMenu(false);
+                  }}
+                >
+                  {showUpcomingOnly ? '✓ Only Upcoming Releases' : '○ All Releases'}
+                </button>
 
                 <div className="menu-divider"></div>
 

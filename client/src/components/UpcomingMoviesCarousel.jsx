@@ -72,6 +72,19 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
     }
   };
 
+  const handleDislike = async () => {
+    try {
+      await axios.post(
+        `/api/movies/${selectedMovie.id}/like`,
+        { type: 'dislike' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // You can add dislike count tracking if needed
+    } catch (error) {
+      console.error('Error toggling dislike:', error);
+    }
+  };
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -207,7 +220,10 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
                   >
                     {liked ? '❤️' : '🤍'} {liked ? 'Liked' : 'Like'} ({likes})
                   </button>
-                  <button className="btn-dislike">
+                  <button
+                    className="btn-dislike"
+                    onClick={handleDislike}
+                  >
                     👎 Dislike
                   </button>
                 </div>
