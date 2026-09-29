@@ -8,7 +8,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
@@ -79,7 +81,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
 
       setSelectedMovie(movie);
       setLikes(likesRes.data.likes);
+      setDislikes(likesRes.data.dislikes || 0);
       setLiked(false);
+      setDisliked(false);
       setComments(commentsRes.data);
       setNewComment('');
     } catch (error) {
@@ -95,7 +99,9 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setLikes(response.data.likes);
+      setDislikes(response.data.dislikes || 0);
       setLiked(response.data.liked);
+      setDisliked(response.data.disliked || false);
       if (onLikeDislike) {
         onLikeDislike();
       }
@@ -108,17 +114,18 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
     try {
       const response = await axios.post(
         `/api/movies/${selectedMovie.id}/like`,
-        { type: 'dislike' },
+        { type: disliked ? 'undislike' : 'dislike' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setLikes(response.data.likes);
-      setLiked(false);
+      setDislikes(response.data.dislikes || 0);
+      setLiked(response.data.liked);
+      setDisliked(response.data.disliked || false);
       if (onLikeDislike) {
         onLikeDislike();
       }
     } catch (error) {
       console.error('Error toggling dislike:', error);
-      alert('Failed to dislike movie');
     }
   };
 
@@ -262,10 +269,10 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                     {liked ? '❤️' : '🤍'} {liked ? 'Liked' : 'Like'} ({likes})
                   </button>
                   <button
-                    className="btn-dislike"
+                    className={`btn-dislike ${disliked ? 'active' : ''}`}
                     onClick={handleDislike}
                   >
-                    👎 Dislike
+                    {disliked ? '👎' : '👎'} {disliked ? 'Disliked' : 'Dislike'} ({dislikes})
                   </button>
                 </div>
 

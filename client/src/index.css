@@ -2062,6 +2062,12 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.15);
 }
 
+.btn-dislike.active {
+  background: rgba(155, 155, 155, 0.3);
+  border-color: #9c9c9c;
+  color: #fff;
+}
+
 .comments-section {
   margin-top: 30px;
 }

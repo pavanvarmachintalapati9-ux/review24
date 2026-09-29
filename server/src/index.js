@@ -318,20 +318,21 @@ app.post('/api/movies/:movieId/ai-review', async (req, res) => {
 
 // NEW ENDPOINTS: Likes, Ratings, Comments, Reviews
 
-// POST like a movie
+// POST like/dislike a movie
 app.post('/api/movies/:movieId/like', authenticateUser, (req, res) => {
   const { movieId } = req.params;
-  const { type } = req.body; // 'like', 'unlike', or 'dislike'
+  const { type } = req.body; // 'like', 'unlike', 'dislike', or 'undislike'
 
   const movie = db.movies.find(m => m.id === movieId);
   if (!movie) {
     return res.status(404).json({ error: 'Movie not found' });
   }
 
-  const existingLike = db.likes.find(l => l.movieId === movieId && l.userId === req.user.id);
+  const existingReaction = db.likes.find(l => l.movieId === movieId && l.userId === req.user.id);
 
   if (type === 'like') {
-    if (!existingLike) {
+    if (!existingReaction) {
+      // Add new like
       db.likes.push({
         id: uuidv4(),
         movieId,
@@ -339,21 +340,52 @@ app.post('/api/movies/:movieId/like', authenticateUser, (req, res) => {
         type: 'like',
         createdAt: new Date().toISOString()
       });
+    } else if (existingReaction.type === 'dislike') {
+      // Convert dislike to like
+      existingReaction.type = 'like';
     }
-  } else if (type === 'unlike' || type === 'dislike') {
-    if (existingLike) {
-      db.likes = db.likes.filter(l => l.id !== existingLike.id);
+  } else if (type === 'unlike') {
+    if (existingReaction && existingReaction.type === 'like') {
+      db.likes = db.likes.filter(l => l.id !== existingReaction.id);
+    }
+  } else if (type === 'dislike') {
+    if (!existingReaction) {
+      // Add new dislike
+      db.likes.push({
+        id: uuidv4(),
+        movieId,
+        userId: req.user.id,
+        type: 'dislike',
+        createdAt: new Date().toISOString()
+      });
+    } else if (existingReaction.type === 'like') {
+      // Convert like to dislike
+      existingReaction.type = 'dislike';
+    }
+  } else if (type === 'undislike') {
+    if (existingReaction && existingReaction.type === 'dislike') {
+      db.likes = db.likes.filter(l => l.id !== existingReaction.id);
     }
   }
 
   const likes = db.likes.filter(l => l.movieId === movieId && l.type === 'like').length;
-  res.json({ likes, liked: type === 'like' });
+  const dislikes = db.likes.filter(l => l.movieId === movieId && l.type === 'dislike').length;
+  const userReaction = db.likes.find(l => l.movieId === movieId && l.userId === req.user.id);
+
+  res.json({
+    likes,
+    dislikes,
+    liked: userReaction?.type === 'like' ? true : false,
+    disliked: userReaction?.type === 'dislike' ? true : false,
+    userReaction: userReaction?.type || null
+  });
 });
 
-// GET likes for movie
+// GET likes and dislikes for movie
 app.get('/api/movies/:movieId/likes', (req, res) => {
   const likes = db.likes.filter(l => l.movieId === req.params.movieId && l.type === 'like').length;
-  res.json({ likes });
+  const dislikes = db.likes.filter(l => l.movieId === req.params.movieId && l.type === 'dislike').length;
+  res.json({ likes, dislikes });
 });
 
 // POST rating for movie (stars)
