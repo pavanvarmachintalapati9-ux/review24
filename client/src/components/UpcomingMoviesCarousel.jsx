@@ -38,8 +38,15 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   // Include "More" as 10th slide if there are more than 9 movies
   const totalSlides = carouselMovies.length + (upcomingMovies.length > 9 ? 1 : 0);
 
+  // Reset index when slides change
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [totalSlides]);
+
   // Auto-scroll effect
   useEffect(() => {
+    if (totalSlides === 0) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
     }, AUTO_SCROLL_INTERVAL);
