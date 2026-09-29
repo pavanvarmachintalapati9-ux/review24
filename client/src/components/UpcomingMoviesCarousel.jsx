@@ -8,24 +8,38 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
 
-  const upcomingMovies = movies.filter(movie => {
-    return new Date(movie.releaseDate) > new Date();
-  });
+  // Filter and sort upcoming movies by likes (descending)
+  const upcomingMovies = movies
+    .filter(movie => {
+      return new Date(movie.releaseDate) > new Date();
+    })
+    .sort((a, b) => {
+      return (b.likes || 0) - (a.likes || 0);
+    });
+
+  // Show only first 9 in carousel
+  const carouselMovies = upcomingMovies.slice(0, 9);
 
   if (upcomingMovies.length === 0) {
     return null;
   }
 
+  // Include "More" as 10th slide if there are more than 9 movies
+  const totalSlides = carouselMovies.length + (upcomingMovies.length > 9 ? 1 : 0);
+
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % upcomingMovies.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? upcomingMovies.length - 1 : prevIndex - 1
+      prevIndex === 0 ? totalSlides - 1 : prevIndex - 1
     );
   };
+
+  const isMoreSlide = currentIndex === carouselMovies.length;
 
   const handleSelectMovie = async (movie) => {
     try {
@@ -90,36 +104,54 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
         </button>
 
         <div className="carousel-slide">
-          <div className="upcoming-movie-card">
-            <div className="upcoming-poster">
-              {currentMovie.posterUrl ? (
-                <img src={currentMovie.posterUrl} alt={currentMovie.title} />
-              ) : (
-                <div className="poster-placeholder">📽️</div>
-              )}
-              <div className="new-release-badge">🆕 New Release</div>
-              <div className="poster-overlay">
+          {isMoreSlide ? (
+            <div className="upcoming-more-card">
+              <div className="more-content">
+                <h2>More Upcoming Releases</h2>
+                <p>View all {upcomingMovies.length} upcoming movies and series</p>
                 <button
-                  className="play-btn"
-                  onClick={() => handleSelectMovie(currentMovie)}
+                  className="btn-view-all"
+                  onClick={() => setShowAllUpcoming(true)}
                 >
-                  ▶
+                  View All →
                 </button>
               </div>
             </div>
-
-            <div className="upcoming-info">
-              <div className="upcoming-type-badge">
-                {currentMovie.movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+          ) : (
+            <div className="upcoming-movie-card">
+              <div className="upcoming-poster">
+                {carouselMovies[currentIndex].posterUrl ? (
+                  <img src={carouselMovies[currentIndex].posterUrl} alt={carouselMovies[currentIndex].title} />
+                ) : (
+                  <div className="poster-placeholder">📽️</div>
+                )}
+                <div className="new-release-badge">🆕 New Release</div>
+                <div className="poster-overlay">
+                  <button
+                    className="play-btn"
+                    onClick={() => handleSelectMovie(carouselMovies[currentIndex])}
+                  >
+                    ▶
+                  </button>
+                </div>
               </div>
-              <h3 className="upcoming-title">{currentMovie.title}</h3>
-              <p className="upcoming-release">
-                Coming on {new Date(currentMovie.releaseDate).toLocaleDateString()}
-              </p>
-              <p className="upcoming-genre">{currentMovie.genre}</p>
-              <p className="upcoming-description">{currentMovie.description}</p>
+
+              <div className="upcoming-info">
+                <div className="upcoming-type-badge">
+                  {carouselMovies[currentIndex].movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+                </div>
+                <h3 className="upcoming-title">{carouselMovies[currentIndex].title}</h3>
+                <p className="upcoming-release">
+                  Coming on {new Date(carouselMovies[currentIndex].releaseDate).toLocaleDateString()}
+                </p>
+                <p className="upcoming-genre">{carouselMovies[currentIndex].genre}</p>
+                <p className="upcoming-description">{carouselMovies[currentIndex].description}</p>
+                <div className="upcoming-likes-display">
+                  ❤️ {carouselMovies[currentIndex].likes || 0} likes
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <button className="carousel-nav next" onClick={nextSlide}>
@@ -128,7 +160,7 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
       </div>
 
       <div className="carousel-indicators">
-        {upcomingMovies.map((_, index) => (
+        {Array.from({ length: totalSlides }).map((_, index) => (
           <button
             key={index}
             className={`indicator ${index === currentIndex ? 'active' : ''}`}
@@ -210,6 +242,52 @@ function UpcomingMoviesCarousel({ movies, token, user }) {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAllUpcoming && (
+        <div className="modal-overlay" onClick={() => setShowAllUpcoming(false)}>
+          <div className="modal-content all-upcoming-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>All Upcoming Releases</h2>
+              <button className="close-btn" onClick={() => setShowAllUpcoming(false)}>
+                ×
+              </button>
+            </div>
+
+            <div className="all-upcoming-grid">
+              {upcomingMovies.map((movie) => (
+                <div key={movie.id} className="all-upcoming-item">
+                  <div className="all-upcoming-poster">
+                    {movie.posterUrl ? (
+                      <img src={movie.posterUrl} alt={movie.title} />
+                    ) : (
+                      <div className="poster-placeholder">📽️</div>
+                    )}
+                    <div className="new-release-badge">🆕 New Release</div>
+                  </div>
+                  <div className="all-upcoming-info">
+                    <div className="upcoming-type-badge">
+                      {movie.movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+                    </div>
+                    <h4 className="all-upcoming-title">{movie.title}</h4>
+                    <p className="all-upcoming-release">
+                      {new Date(movie.releaseDate).toLocaleDateString()}
+                    </p>
+                    <p className="all-upcoming-likes">
+                      ❤️ {movie.likes || 0} likes
+                    </p>
+                    <button
+                      className="btn-view-details"
+                      onClick={() => handleSelectMovie(movie)}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
