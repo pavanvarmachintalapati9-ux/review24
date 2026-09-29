@@ -66,6 +66,10 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
 
   const isMoreSlide = currentIndex === carouselMovies.length;
 
+  // Safety check: ensure currentIndex is valid
+  const safeCurrentIndex = Math.min(currentIndex, carouselMovies.length - 1);
+  const canRenderMovieCard = !isMoreSlide && carouselMovies.length > 0;
+
   const handleSelectMovie = async (movie) => {
     try {
       const [likesRes, commentsRes] = await Promise.all([
@@ -163,11 +167,11 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                 </button>
               </div>
             </div>
-          ) : (
+          ) : canRenderMovieCard ? (
             <div className="upcoming-movie-card">
               <div className="upcoming-poster">
-                {carouselMovies[currentIndex].posterUrl ? (
-                  <img src={carouselMovies[currentIndex].posterUrl} alt={carouselMovies[currentIndex].title} />
+                {carouselMovies[safeCurrentIndex].posterUrl ? (
+                  <img src={carouselMovies[safeCurrentIndex].posterUrl} alt={carouselMovies[safeCurrentIndex].title} />
                 ) : (
                   <div className="poster-placeholder">📽️</div>
                 )}
@@ -175,7 +179,7 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                 <div className="poster-overlay">
                   <button
                     className="play-btn"
-                    onClick={() => handleSelectMovie(carouselMovies[currentIndex])}
+                    onClick={() => handleSelectMovie(carouselMovies[safeCurrentIndex])}
                   >
                     ▶
                   </button>
@@ -184,18 +188,22 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
 
               <div className="upcoming-info">
                 <div className="upcoming-type-badge">
-                  {carouselMovies[currentIndex].movieType === 'series' ? '📺 Series' : '🎬 Movie'}
+                  {carouselMovies[safeCurrentIndex].movieType === 'series' ? '📺 Series' : '🎬 Movie'}
                 </div>
-                <h3 className="upcoming-title">{carouselMovies[currentIndex].title}</h3>
+                <h3 className="upcoming-title">{carouselMovies[safeCurrentIndex].title}</h3>
                 <p className="upcoming-release">
-                  Coming on {new Date(carouselMovies[currentIndex].releaseDate).toLocaleDateString()}
+                  Coming on {new Date(carouselMovies[safeCurrentIndex].releaseDate).toLocaleDateString()}
                 </p>
-                <p className="upcoming-genre">{carouselMovies[currentIndex].genre}</p>
-                <p className="upcoming-description">{carouselMovies[currentIndex].description}</p>
+                <p className="upcoming-genre">{carouselMovies[safeCurrentIndex].genre}</p>
+                <p className="upcoming-description">{carouselMovies[safeCurrentIndex].description}</p>
                 <div className="upcoming-likes-display">
-                  ❤️ {carouselMovies[currentIndex].likes || 0} likes
+                  ❤️ {carouselMovies[safeCurrentIndex].likes || 0} likes
                 </div>
               </div>
+            </div>
+          ) : (
+            <div className="upcoming-movie-card">
+              <div className="poster-placeholder">📽️</div>
             </div>
           )}
         </div>
