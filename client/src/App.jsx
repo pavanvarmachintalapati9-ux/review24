@@ -143,14 +143,19 @@ function App() {
         }
       });
 
-      // Filter released movies if showUpcomingOnly is true
-      let filteredReleased = released;
-      if (showUpcomingOnly) {
-        filteredReleased = [];
+      // Determine which movies to show in popcorn-card
+      let moviesToDisplay = released;
+
+      // For admin: show both released and upcoming
+      if (user?.isAdmin) {
+        moviesToDisplay = [...released, ...upcoming];
+      } else if (showUpcomingOnly) {
+        // For non-admin: if showUpcomingOnly, show upcoming movies instead of released
+        moviesToDisplay = upcoming;
       }
 
       // Sort by release date (latest first)
-      const sortedReleased = filteredReleased.sort((a, b) => {
+      const sortedReleased = moviesToDisplay.sort((a, b) => {
         try {
           return new Date(b.releaseDate) - new Date(a.releaseDate);
         } catch (error) {
@@ -410,7 +415,7 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {!user?.isAdmin && !searchQuery && <UpcomingMoviesCarousel movies={upcomingMovies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
+        {!user?.isAdmin && !searchQuery && !showUpcomingOnly && <UpcomingMoviesCarousel movies={upcomingMovies} token={token} user={user} selectedTab={selectedTab} onLikeDislike={fetchMovies} />}
 
         {loading ? (
           <div className="loading-state">
