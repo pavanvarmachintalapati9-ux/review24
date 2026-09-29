@@ -14,6 +14,7 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
   // Filter and sort upcoming movies by likes (descending)
   let upcomingMovies = [];
@@ -112,6 +113,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
       setDislikes(response.data.dislikes || 0);
       setLiked(response.data.liked);
       setDisliked(response.data.disliked || false);
+      setUpdateTrigger(prev => prev + 1);
+
       if (onLikeDislike) {
         onLikeDislike();
       }
@@ -131,6 +134,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
       setDislikes(response.data.dislikes || 0);
       setLiked(response.data.liked);
       setDisliked(response.data.disliked || false);
+      setUpdateTrigger(prev => prev + 1);
+
       if (onLikeDislike) {
         onLikeDislike();
       }
@@ -218,8 +223,8 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
                 <p className="upcoming-genre">{carouselMovies[safeCurrentIndex].genre}</p>
                 <p className="upcoming-description">{carouselMovies[safeCurrentIndex].description}</p>
                 <div className="upcoming-likes-display">
-                  <span>❤️ {carouselMovies[safeCurrentIndex].likes || 0} likes</span>
-                  <span>👎 {carouselMovies[safeCurrentIndex].dislikes || 0} dislikes</span>
+                  <span>❤️ {selectedMovie?.id === carouselMovies[safeCurrentIndex].id ? likes : (carouselMovies[safeCurrentIndex].likes || 0)} likes</span>
+                  <span>👎 {selectedMovie?.id === carouselMovies[safeCurrentIndex].id ? dislikes : (carouselMovies[safeCurrentIndex].dislikes || 0)} dislikes</span>
                 </div>
               </div>
             </div>
