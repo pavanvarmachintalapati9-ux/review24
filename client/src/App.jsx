@@ -63,7 +63,9 @@ function App() {
   const fetchGenres = async () => {
     try {
       const response = await axios.get('/api/genres');
-      setGenres(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setGenres(response.data);
+      }
     } catch (error) {
       console.error('Error fetching genres:', error);
     }
@@ -72,7 +74,9 @@ function App() {
   const fetchLanguages = async () => {
     try {
       const response = await axios.get('/api/languages');
-      setLanguages(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        setLanguages(response.data);
+      }
     } catch (error) {
       console.error('Error fetching languages:', error);
     }
@@ -90,6 +94,13 @@ function App() {
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
 
+      // Ensure response data is an array
+      if (!Array.isArray(response.data)) {
+        console.error('Invalid movies response:', response.data);
+        setMovies([]);
+        return;
+      }
+
       // Filter to only upcoming movies if showUpcomingOnly is true
       let filtered = response.data;
       if (showUpcomingOnly) {
@@ -106,6 +117,7 @@ function App() {
       setMovies(sortedMovies);
     } catch (error) {
       console.error('Error fetching movies:', error);
+      setMovies([]);
     } finally {
       setLoading(false);
     }
@@ -128,11 +140,17 @@ function App() {
     setSelectedMovie(null);
   };
 
-  const handleMovieAdded = () => {
+  const handleMovieAdded = async () => {
     setShowUploadForm(false);
-    fetchMovies();
-    fetchGenres();
-    fetchLanguages();
+    try {
+      await Promise.all([
+        fetchMovies(),
+        fetchGenres(),
+        fetchLanguages()
+      ]);
+    } catch (error) {
+      console.error('Error refreshing data after movie upload:', error);
+    }
   };
 
   // Show login if not authenticated
