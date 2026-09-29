@@ -220,6 +220,7 @@ app.get('/api/movies', (req, res) => {
       : 0;
 
     const likes = db.likes.filter(l => l.movieId === movie.id && l.type === 'like').length;
+    const dislikes = db.likes.filter(l => l.movieId === movie.id && l.type === 'dislike').length;
     const comments = db.comments.filter(c => c.movieId === movie.id).length;
     const reviews = db.reviews.filter(r => r.movieId === movie.id).length;
 
@@ -227,6 +228,7 @@ app.get('/api/movies', (req, res) => {
       ...movie,
       avgRating: parseFloat(avgRating),
       likes,
+      dislikes,
       ratingCount: ratings.length,
       commentCount: comments,
       reviewCount: reviews
