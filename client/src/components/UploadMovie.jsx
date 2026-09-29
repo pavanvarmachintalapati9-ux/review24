@@ -164,13 +164,13 @@ function UploadMovie({ token, onMovieAdded }) {
         {error && <div className="error-message">{error}</div>}
 
         <div className="form-group">
-          <label>Movie Title *</label>
+          <label>Title *</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter movie title"
+            placeholder="Enter title"
             disabled={loading}
             required
           />
@@ -182,7 +182,7 @@ function UploadMovie({ token, onMovieAdded }) {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter movie description or synopsis"
+            placeholder="Enter description"
             disabled={loading}
             required
           />
@@ -274,18 +274,6 @@ function UploadMovie({ token, onMovieAdded }) {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="form-group">
-          <label>Poster URL (Optional - if no image uploaded)</label>
-          <input
-            type="url"
-            name="posterUrl"
-            value={formData.posterUrl}
-            onChange={handleChange}
-            placeholder="https://example.com/poster.jpg"
-            disabled={loading}
-          />
         </div>
 
         <button type="submit" className="btn-submit" disabled={loading}>
