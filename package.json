@@ -12,6 +12,8 @@
     "build:client": "cd client && npm run build"
   },
   "devDependencies": {
-    "concurrently": "^8.2.1"
+    "@playwright/test": "^1.63.0",
+    "concurrently": "^8.2.1",
+    "playwright": "^1.63.0"
   }
 }

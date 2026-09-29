@@ -104,14 +104,24 @@ function App() {
       // Filter to only upcoming movies if showUpcomingOnly is true
       let filtered = response.data;
       if (showUpcomingOnly) {
-        filtered = response.data.filter(movie =>
-          new Date(movie.releaseDate) > new Date()
-        );
+        filtered = response.data.filter(movie => {
+          try {
+            return movie && movie.releaseDate && new Date(movie.releaseDate) > new Date();
+          } catch (error) {
+            console.error('Error filtering movie:', movie, error);
+            return false;
+          }
+        });
       }
 
       // Sort by release date (latest first)
       const sortedMovies = filtered.sort((a, b) => {
-        return new Date(b.releaseDate) - new Date(a.releaseDate);
+        try {
+          return new Date(b.releaseDate) - new Date(a.releaseDate);
+        } catch (error) {
+          console.error('Error sorting movies:', error);
+          return 0;
+        }
       });
 
       setMovies(sortedMovies);
@@ -143,13 +153,27 @@ function App() {
   const handleMovieAdded = async () => {
     setShowUploadForm(false);
     try {
-      await Promise.all([
+      const results = await Promise.allSettled([
         fetchMovies(),
         fetchGenres(),
         fetchLanguages()
       ]);
+
+      // Check if any promises rejected
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const operation = ['movies', 'genres', 'languages'][index];
+          console.error(`Error refreshing ${operation} after movie upload:`, result.reason);
+        }
+      });
     } catch (error) {
-      console.error('Error refreshing data after movie upload:', error);
+      console.error('Error in handleMovieAdded:', error);
+      // Ensure at least movies are fetched
+      try {
+        await fetchMovies();
+      } catch (retryError) {
+        console.error('Failed to fetch movies after upload:', retryError);
+      }
     }
   };
 

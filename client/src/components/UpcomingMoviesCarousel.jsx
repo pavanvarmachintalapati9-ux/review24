@@ -16,19 +16,33 @@ function UpcomingMoviesCarousel({ movies, token, user, selectedTab, onLikeDislik
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
 
   // Filter and sort upcoming movies by likes (descending)
-  let upcomingMovies = movies
-    .filter(movie => {
-      const isUpcoming = new Date(movie.releaseDate) > new Date();
-      if (!isUpcoming) return false;
+  let upcomingMovies = [];
+  try {
+    upcomingMovies = (movies || [])
+      .filter(movie => {
+        // Ensure movie and releaseDate exist
+        if (!movie || !movie.releaseDate) return false;
 
-      // Filter by selected tab
-      if (selectedTab === 'movies') return movie.movieType === 'movie';
-      if (selectedTab === 'series') return movie.movieType === 'series';
-      return true; // Show all for 'home' tab
-    })
-    .sort((a, b) => {
-      return (b.likes || 0) - (a.likes || 0);
-    });
+        try {
+          const isUpcoming = new Date(movie.releaseDate) > new Date();
+          if (!isUpcoming) return false;
+
+          // Filter by selected tab
+          if (selectedTab === 'movies') return movie.movieType === 'movie';
+          if (selectedTab === 'series') return movie.movieType === 'series';
+          return true; // Show all for 'home' tab
+        } catch (error) {
+          console.error('Error filtering movie:', movie, error);
+          return false;
+        }
+      })
+      .sort((a, b) => {
+        return (b.likes || 0) - (a.likes || 0);
+      });
+  } catch (error) {
+    console.error('Error processing carousel movies:', error);
+    upcomingMovies = [];
+  }
 
   // Show only first 9 in carousel
   const carouselMovies = upcomingMovies.slice(0, 9);
