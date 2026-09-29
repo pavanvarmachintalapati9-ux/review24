@@ -16,6 +16,7 @@ function App() {
   const [languages, setLanguages] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedMovieType, setSelectedMovieType] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
@@ -53,7 +54,7 @@ function App() {
     if (token) {
       fetchMovies();
     }
-  }, [selectedGenre, selectedLanguage, searchQuery, token]);
+  }, [selectedGenre, selectedLanguage, selectedMovieType, searchQuery, token]);
 
   const fetchGenres = async () => {
     try {
@@ -79,6 +80,7 @@ function App() {
       const params = new URLSearchParams();
       if (selectedGenre) params.append('genre', selectedGenre);
       if (selectedLanguage) params.append('language', selectedLanguage);
+      if (selectedMovieType) params.append('movieType', selectedMovieType);
       if (searchQuery) params.append('search', searchQuery);
 
       const response = await axios.get(`/api/movies?${params.toString()}`);
@@ -204,6 +206,20 @@ function App() {
             />
             <button className="btn-search" onClick={fetchMovies}>
               Search
+            </button>
+            <button
+              className={`btn-filter ${selectedMovieType === 'movie' ? 'active' : ''}`}
+              onClick={() => setSelectedMovieType(selectedMovieType === 'movie' ? '' : 'movie')}
+              title="Movies"
+            >
+              🎬 Movies
+            </button>
+            <button
+              className={`btn-filter ${selectedMovieType === 'series' ? 'active' : ''}`}
+              onClick={() => setSelectedMovieType(selectedMovieType === 'series' ? '' : 'series')}
+              title="Series"
+            >
+              📺 Series
             </button>
             {user?.isAdmin && (
               <button

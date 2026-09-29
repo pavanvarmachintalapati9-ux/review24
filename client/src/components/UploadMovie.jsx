@@ -35,9 +35,6 @@ function UploadMovie({ token, onMovieAdded }) {
       if (genresRes.data.length > 0) {
         setFormData(prev => ({ ...prev, genre: genresRes.data[0] }));
       }
-      if (languagesRes.data.length > 0) {
-        setFormData(prev => ({ ...prev, language: languagesRes.data[0] }));
-      }
     } catch (error) {
       console.error('Error fetching genres/languages:', error);
     }
