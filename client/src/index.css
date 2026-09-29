@@ -1065,6 +1065,14 @@ html, body, #root {
   background: #c4081c;
 }
 
+.header-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
 .header-right {
   display: flex;
   gap: 12px;

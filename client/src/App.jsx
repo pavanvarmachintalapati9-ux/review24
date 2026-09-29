@@ -124,32 +124,8 @@ function App() {
       {/* Header */}
       <header className="header-new">
         <div className="header-content-new">
-          <h1 className="logo">📺 Review 24</h1>
-
-          <div className="search-section">
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search movies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="btn-search" onClick={fetchMovies}>
-              Search
-            </button>
-            {user?.isAdmin && (
-              <button
-                className="btn-upload"
-                onClick={() => setShowUploadForm(true)}
-                title="Upload Movie"
-              >
-                + Upload Movies
-              </button>
-            )}
-          </div>
-
           {/* Hamburger Menu */}
-          <div className="header-right">
+          <div className="header-left">
             <button
               className="btn-menu"
               onClick={() => setShowMenu(!showMenu)}
@@ -213,6 +189,30 @@ function App() {
                   </button>
                 </div>
               </div>
+            )}
+          </div>
+
+          <h1 className="logo">📺 Review 24</h1>
+
+          <div className="search-section">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button className="btn-search" onClick={fetchMovies}>
+              Search
+            </button>
+            {user?.isAdmin && (
+              <button
+                className="btn-upload"
+                onClick={() => setShowUploadForm(true)}
+                title="Upload Movie"
+              >
+                + Upload Movies
+              </button>
             )}
           </div>
         </div>
