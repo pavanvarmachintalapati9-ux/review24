@@ -1,0 +1,13 @@
+{
+  "appId": "com.moviereview.review24",
+  "appName": "Review24",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

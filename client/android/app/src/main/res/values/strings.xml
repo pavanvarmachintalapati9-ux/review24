@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Review24</string>
+    <string name="title_activity_main">Review24</string>
+    <string name="package_name">com.moviereview.review24</string>
+    <string name="custom_url_scheme">com.moviereview.review24</string>
+</resources>

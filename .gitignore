@@ -13,3 +13,16 @@ dist/
 .turbo
 build/
 coverage/
+
+# Mobile/Capacitor
+android/app/build/
+android/.gradle/
+android/local.properties
+*.keystore
+*.jks
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/Pods/
+
+# IDE
+*.iml
+.gradle
