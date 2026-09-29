@@ -50,6 +50,7 @@ function App() {
       localStorage.removeItem('user');
       setToken(null);
       setUser(null);
+      setLoading(false);
     }
   };
 
